@@ -16,6 +16,14 @@
       margin-left: -500px;
   }
 
+  .bubble {
+    fill: red;
+  }
+
+  .blox {
+    fill: lightgrey;
+  }
+
 </style>
 
 
@@ -27,11 +35,7 @@
   var width  = 1000,
       height = 1000;
 
-  var blocks = d3.select("#js-geojson-example").append("svg")
-        .attr("width", width)
-        .attr("height", height);
-
-  var car = d3.select("#js-geojson-example").append("svg")
+  var svg = d3.select("#js-geojson-example").append("svg")
         .attr("width", width)
         .attr("height", height);
 
@@ -41,35 +45,55 @@
 
       var scale  = 600000;
       var offset = [width/2 + 5300, height/2 + 8640];
-      var projection = d3.geo.mercator().scale(scale).center(center)
-          .translate(offset);
+      var projection = d3.geo.mercator()
+                        .scale(scale)
+                        .center(center)
+                        .translate(offset);
 
       // create the path
       var path = d3.geo.path().projection(projection);
 
+      // function to scale bubble size based on data (GPS accuracy)
       var radius = d3.scale.sqrt()
-        .domain([0, 1e6])
-        .range([0, 12]);
+        .domain([0, 12])
+        .range([0, 100]);
 
 
-
-      blocks.selectAll("path").data(json.features).enter().append("path")
+      svg.append("path")
+        .datum({type: "FeatureCollection", features: json.features})
+        .attr("json", d3.geo.path())
         .attr("d", path)
-        .style("fill", "lightgrey")
+        .attr("class", "blox");
+
 
         // load the car data
-        d3.json("Data/car-1.json", function(carjson) {
-          car.selectAll("path")
-            .data(carjson.features)
-            .enter()
-            .append("path")
-            .attr("d", path)
-            .attr("r", 500)
-            .style("fill", "black")
-        });
+        d3.json("Data/car-a.json", function(carjson) {
+
+
+          svg.append("g")
+              .attr("class", "bubble")
+            .selectAll("circle")
+              .data(topojson.feature(us, us.objects.counties).features
+                .sort(function(a, b) { return b.properties.population - a.properties.population; }))
+            .enter().append("circle")
+              .attr("r", function(d) { return radius(d.properties.population); });
+          });
+
+
+
+        //   svg.selectAll("circle")
+        //     .data(carjson.features)
+        //     .enter()
+        //     .append("circle")
+        //     .attr("d", path)
+        //     .attr("r", function(d) {
+        //       return radius(d.properties.accuracy);
+        //     })
+        //     .attr("class", "bubble")
+        // });
 
         // add a rectangle to see the bound of the svg
-        blocks.append("rect").attr('width', width).attr('height', height)
+        svg.append("rect").attr('width', width).attr('height', height)
           .style('stroke', 'black').style('fill', 'none');
 
 

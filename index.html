@@ -21,9 +21,6 @@
 
 <script>
 
-  // var width  = $(window).width(),
-  //     height = $(window).height();
-
   var width  = 1000,
       height = 1000;
 
@@ -48,8 +45,12 @@
       var path = d3.geo.path().projection(projection);
 
       var radius = d3.scale.sqrt()
-        .domain([0, 1e6])
-        .range([0, 12]);
+        .domain([0, 12])
+        .range([0, 10]);
+
+      var opacity = d3.scale.linear()
+        .domain([0, 12])
+        .range([1, 0.2]);
 
 
 
@@ -58,14 +59,21 @@
         .style("fill", "lightgrey")
 
         // load the car data
-        d3.json("Data/car-1.json", function(carjson) {
-          car.selectAll("path")
-            .data(carjson.features)
-            .enter()
-            .append("path")
-            .attr("d", path)
-            .attr("r", 500)
-            .style("fill", "black")
+        d3.json("Data/car_1.json", function(carjson) {
+          car.selectAll('path')
+             .data(carjson.features)
+             .enter()
+             .append('svg:circle')
+             .attr("transform", function(d) {
+                return "translate(" + projection(d.geometry.coordinates) + ")";
+             })
+             .attr('r', function(d) {
+               return radius(d.properties.accuracy);
+             })
+             .attr('fill-opacity',  function(d) {
+               console.log(opacity(d.properties.accuracy));
+               return opacity(d.properties.accuracy);
+             });
         });
 
         // add a rectangle to see the bound of the svg

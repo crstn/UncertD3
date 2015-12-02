@@ -95,6 +95,9 @@
              })
              .attr('r', function(d) {
                return radius(d.properties.accuracy);
+             })
+             .attr('fill-opacity',  function(d) {
+               return opacity(d.properties.accuracy);
              });
 
         });
@@ -112,5 +115,5 @@
 </script>
 
 <body>
-<a href="index2.html" id="link">NEXT</a>
+<a href="index4.html" id="link">NEXT</a>
 </body>

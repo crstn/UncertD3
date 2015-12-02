@@ -53,7 +53,15 @@
       // function to scale bubble size based on data (GPS accuracy)
       var radius = d3.scale.sqrt()
         .domain([0, 12])
+<<<<<<< HEAD
         .range([0, 100/scale]);
+=======
+        .range([0, 10]);
+
+      var opacity = d3.scale.linear()
+        .domain([0, 12])
+        .range([1, 0.2]);
+>>>>>>> old-state
 
 
       svg.append("path")
@@ -64,6 +72,7 @@
 
 
         // load the car data
+<<<<<<< HEAD
         d3.json("Data/car-a.json", function(carjson) {
 
           var circles = svg.append("g")
@@ -83,6 +92,23 @@
               return radius(d.properties.accuracy);
             })
             .attr("class", "bubble");
+=======
+        d3.json("Data/car_1.json", function(carjson) {
+          car.selectAll('path')
+             .data(carjson.features)
+             .enter()
+             .append('svg:circle')
+             .attr("transform", function(d) {
+                return "translate(" + projection(d.geometry.coordinates) + ")";
+             })
+             .attr('r', function(d) {
+               return radius(d.properties.accuracy);
+             })
+             .attr('fill-opacity',  function(d) {
+               console.log(opacity(d.properties.accuracy));
+               return opacity(d.properties.accuracy);
+             });
+>>>>>>> old-state
         });
 
         // add a rectangle to see the bound of the svg

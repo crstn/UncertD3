@@ -2,55 +2,16 @@
 <meta charset="utf-8">
 <body>
 
-<div id='js-geojson-example'></div>
+<div id="js-geojson-example"></div>
 
-<script src='http://code.jquery.com/jquery-2.0.3.js'></script>
+<script src="http://code.jquery.com/jquery-2.0.3.js"></script>
 <script src="http://d3js.org/d3.v3.min.js"></script>
 <script src="http://d3js.org/topojson.v0.min.js"></script>
-<style>
+<script src="common.js"></script>
 
-  svg{
-      position: absolute;
-      top: 20px;
-      left: 50%;
-      margin-left: -500px;
-  }
-
-  .bubble {
-    fill: red;
-  }
-
-  .blox {
-    fill: lightgrey;
-  }
-
-  a#link{
-    position:absolute;
-    bottom: 10px;
-    left: 48%;
-    color: white;
-    background-color: black;
-    text-decoration: none;
-    padding: 2px;
-    font-family: "Helvetica"
-  }
-
-</style>
-
+<link rel="stylesheet" href="style.css" />
 
 <script>
-
-  var width  = 1000,
-      height = 1000;
-
-  var blocks = d3.select("#js-geojson-example").append("svg")
-        .attr("width", width)
-        .attr("height", height);
-
-  var car = d3.select("#js-geojson-example").append("svg")
-        .attr("width", width)
-        .attr("height", height);
-
 
   d3.json("Data/blocks.json", function(json) {
       // create a first guess for the projection
@@ -66,17 +27,6 @@
       // create the path
       var blockpath = d3.geo.path().projection(projection);
 
-      // function to scale bubble size based on data (GPS accuracy)
-      var radius = d3.scale.sqrt()
-        .domain([0, 12])
-        .range([0, 10]);
-
-      var opacity = d3.scale.linear()
-        .domain([0, 12])
-        .range([1, 0.2]);
-
-
-
       blocks.append("path")
         .datum({type: "FeatureCollection", features: json.features})
         .attr("json", d3.geo.path())
@@ -86,8 +36,10 @@
 
         // load the car data
         d3.json("Data/car_1.json", function(carjson) {
+          var cardata = randomize(carjson);
+
           car.selectAll('path')
-             .data(carjson.features)
+             .data(cardata.features)
              .enter()
              .append('svg:circle')
              .attr("transform", function(d) {

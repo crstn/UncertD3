@@ -1,0 +1,25 @@
+svg{
+    position: absolute;
+    top: 20px;
+    left: 50%;
+    margin-left: -500px;
+}
+
+.bubble {
+  fill: red;
+}
+
+.blox {
+  fill: lightgrey;
+}
+
+a#link{
+  position:absolute;
+  bottom: 10px;
+  left: 48%;
+  color: white;
+  background-color: black;
+  text-decoration: none;
+  padding: 2px;
+  font-family: "Helvetica"
+}

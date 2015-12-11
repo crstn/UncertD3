@@ -38,59 +38,69 @@
         .attr("class", "blox");
 
 
+      // function wiggle(data){
+      //   console.log(data);
+      //   // console.log(node);
+      // }
+
       // load the car data
 
       d3.json("Data/car_1.json", function(carjson) {
 
         var cardata = randomize(carjson);
 
+        var easing = "linear";
 
-        car.selectAll('path')
+        var selection = car.selectAll('path')
           .data(cardata.features)
           .enter()
           .append('svg:circle')
           .attr("transform", function(d) {
             return "translate(" + projection(d.geometry.coordinates) + ")";
           })
-          .attr('r', 6)
-          .transition()
-          .duration(function(d){
-            // return d.properties.accuracy*100;
-            return 100;
-          })
-          .ease("back")
-          .attr("transform", function(d) {
-            prj = projection(d.geometry.coordinates)
-            prj[0] = prj[0] + d.properties.accuracy*10
-            prj[1] = prj[1] + d.properties.accuracy*10
-            return "translate(" + prj + ")";
-          })
-          .transition()
-          .duration(function(d){
-            // return d.properties.accuracy*200;
-            return 200;
-          })
-          .ease("back")
-          .attr("transform", function(d) {
-            prj = projection(d.geometry.coordinates)
-            prj[0] = prj[0] - d.properties.accuracy*10
-            prj[1] = prj[1] - d.properties.accuracy*10
-            return "translate(" + prj + ")";
-          })
-          .transition()
-          .duration(function(d){
-            // return d.properties.accuracy*100;
-            return 100;
-          })
-          .ease("back")
-          .attr("transform", function(d) {
-            prj = projection(d.geometry.coordinates)
-            return "translate(" + prj + ")";
-          })
-          // .attr("transform", function(d) {
-          //   console.log("translate([" + d.properties.accuracy +  "," + d.properties.accuracy + "])");
-          //   return "offset([" + d.properties.accuracy +  "," + d.properties.accuracy + "])";
-          // })
+
+        repeat();
+
+        function repeat() {
+          selection.attr('r', 6)
+            .transition()
+            .duration(function(d) {
+              // return d.properties.accuracy*100;
+              return Math.floor((Math.random() * 200));
+            })
+            .ease(easing)
+            .attr("transform", function(d) {
+              prj = projection(d.geometry.coordinates)
+              prj[0] = prj[0] + d.properties.accuracy * 10
+              prj[1] = prj[1] + d.properties.accuracy * 10
+              return "translate(" + prj + ")";
+            })
+            .transition()
+            .duration(function(d) {
+              // return d.properties.accuracy*200;
+              return Math.floor((Math.random() * 400))
+            })
+            .ease(easing)
+            .attr("transform", function(d) {
+              prj = projection(d.geometry.coordinates)
+              prj[0] = prj[0] - d.properties.accuracy * 10
+              prj[1] = prj[1] - d.properties.accuracy * 10
+              return "translate(" + prj + ")";
+            })
+            .transition()
+            .duration(function(d) {
+              // return d.properties.accuracy*100;
+              return Math.floor((Math.random() * 200))
+            })
+            .ease(easing)
+            .attr("transform", function(d) {
+              prj = projection(d.geometry.coordinates)
+              return "translate(" + prj + ")";
+            })
+            .each("end", repeat);
+        }
+
+
       });
 
       // add a rectangle to see the bound of the svg

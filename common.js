@@ -29,9 +29,5 @@ function randomize(cardata){
       cardata.features[Math.floor((Math.random() * cardata.features.length + 1))].properties.accuracy = 0;
       cardata.features[Math.floor((Math.random() * cardata.features.length + 1))].properties.accuracy = 7;
 
-      for(var d in cardata.features){
-          console.log(cardata.features[d].properties.accuracy);
-      }
-
       return cardata;
 }

@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+
+<body>
+
+  <div id='js-geojson-example'></div>
+
+  <script src="http://code.jquery.com/jquery-2.0.3.js"></script>
+  <script src="http://d3js.org/d3.v3.min.js"></script>
+  <script src="http://d3js.org/topojson.v0.min.js"></script>
+  <script src="common.js"></script>
+
+  <link rel="stylesheet" href="style.css" />
+
+  <script>
+    d3.json("Data/blocks.json", function(json) {
+      // create a first guess for the projection
+      var center = d3.geo.centroid(json)
+
+      var scale = 600000;
+      var offset = [width / 2 + 5300, height / 2 + 8640];
+      var projection = d3.geo.mercator()
+        .scale(scale)
+        .center(center)
+        .translate(offset);
+
+      // create the path
+      var blockpath = d3.geo.path().projection(projection);
+
+
+      blocks.append("path")
+        .datum({
+          type: "FeatureCollection",
+          features: json.features
+        })
+        .attr("json", d3.geo.path())
+        .attr("d", blockpath)
+        .attr("class", "blox");
+
+
+      // load the car data
+
+      d3.json("Data/car_1.json", function(carjson) {
+
+        var cardata = randomize(carjson);
+
+
+        car.selectAll('path')
+          .data(cardata.features)
+          .enter()
+          .append('svg:circle')
+          .attr("transform", function(d) {
+            return "translate(" + projection(d.geometry.coordinates) + ")";
+          })
+          .attr('r', 6)
+          .transition()
+          .duration(function(d){
+            // return d.properties.accuracy*100;
+            return 100;
+          })
+          .ease("back")
+          .attr("transform", function(d) {
+            prj = projection(d.geometry.coordinates)
+            prj[0] = prj[0] + d.properties.accuracy*10
+            prj[1] = prj[1] + d.properties.accuracy*10
+            return "translate(" + prj + ")";
+          })
+          .transition()
+          .duration(function(d){
+            // return d.properties.accuracy*200;
+            return 200;
+          })
+          .ease("back")
+          .attr("transform", function(d) {
+            prj = projection(d.geometry.coordinates)
+            prj[0] = prj[0] - d.properties.accuracy*10
+            prj[1] = prj[1] - d.properties.accuracy*10
+            return "translate(" + prj + ")";
+          })
+          .transition()
+          .duration(function(d){
+            // return d.properties.accuracy*100;
+            return 100;
+          })
+          .ease("back")
+          .attr("transform", function(d) {
+            prj = projection(d.geometry.coordinates)
+            return "translate(" + prj + ")";
+          })
+          // .attr("transform", function(d) {
+          //   console.log("translate([" + d.properties.accuracy +  "," + d.properties.accuracy + "])");
+          //   return "offset([" + d.properties.accuracy +  "," + d.properties.accuracy + "])";
+          // })
+      });
+
+      // add a rectangle to see the bound of the svg
+      blocks.append("rect")
+        .attr('width', width)
+        .attr('height', height)
+        .style('stroke', 'black')
+        .style('fill', 'none');
+
+
+    });
+  </script>
+
+  <body>
+    <a href="index4.html" id="link">NEXT</a>
+  </body>

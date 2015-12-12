@@ -5,10 +5,9 @@
 
   <div id='js-geojson-example'></div>
 
-  <script src="http://code.jquery.com/jquery-2.0.3.js"></script>
-  <script src="http://d3js.org/d3.v3.min.js"></script>
-  <script src="http://d3js.org/topojson.v0.min.js"></script>
-  <script src="common.js"></script>
+  <script src="js/jquery.js"></script>
+  <script src="js/d3.js"></script>
+  <script src="js/common.js"></script>
 
   <link rel="stylesheet" href="style.css" />
 
@@ -37,12 +36,6 @@
         .attr("d", blockpath)
         .attr("class", "blox");
 
-
-      // function wiggle(data){
-      //   console.log(data);
-      //   // console.log(node);
-      // }
-
       // load the car data
 
       d3.json("Data/car_1.json", function(carjson) {
@@ -62,40 +55,30 @@
         repeat();
 
         function repeat() {
-          selection.attr('r', 6)
+          selection.attr('r', 4)
             .transition()
             .duration(function(d) {
-              // return d.properties.accuracy*100;
-              return Math.floor((Math.random() * 200));
+               return d.properties.accuracy*100;
+               //   return Math.floor((Math.random() * 800));
             })
             .ease(easing)
             .attr("transform", function(d) {
               prj = projection(d.geometry.coordinates)
-              prj[0] = prj[0] + d.properties.accuracy * 10
-              prj[1] = prj[1] + d.properties.accuracy * 10
+              prj[0] = prj[0] + d.properties.accuracy * 5
+              prj[1] = prj[1] + d.properties.accuracy * 5
               return "translate(" + prj + ")";
             })
             .transition()
             .duration(function(d) {
-              // return d.properties.accuracy*200;
-              return Math.floor((Math.random() * 400))
+              return d.properties.accuracy*100;
+              // return Math.floor((Math.random() * 1600))
             })
             .ease(easing)
             .attr("transform", function(d) {
-              prj = projection(d.geometry.coordinates)
-              prj[0] = prj[0] - d.properties.accuracy * 10
-              prj[1] = prj[1] - d.properties.accuracy * 10
-              return "translate(" + prj + ")";
-            })
-            .transition()
-            .duration(function(d) {
-              // return d.properties.accuracy*100;
-              return Math.floor((Math.random() * 200))
-            })
-            .ease(easing)
-            .attr("transform", function(d) {
-              prj = projection(d.geometry.coordinates)
-              return "translate(" + prj + ")";
+                prj = projection(d.geometry.coordinates)
+                prj[0] = prj[0] - d.properties.accuracy * 5
+                prj[1] = prj[1] - d.properties.accuracy * 5
+                return "translate(" + prj + ")";
             })
             .each("end", repeat);
         }

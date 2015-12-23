@@ -53,11 +53,12 @@
                 repeat();
 
                 function repeat() {
-                    selection.attr('r', 6)
+
+                    var transitionDur = 1000;
+
+                    selection.attr('r', 5)
                         .transition()
-                        .duration(function(d) {
-                            return 1000
-                        })
+                        .duration(transitionDur)
                         .attr("transform", function(d) {
                             var angle = Math.random() * Math.PI * 2;
 
@@ -69,14 +70,11 @@
                             prj[0] = prj[0] + x * 5;
                             prj[1] = prj[1] + y * 5;
 
-                            // prj[0] = prj[0] - d.properties.accuracy * 5
-                            // prj[1] = prj[1] - d.properties.accuracy * 5
                             return "translate(" + prj + ")";
                         })
                         .transition()
-                        .duration(function(d) {
-                            return 1000
-                        })
+                        .duration(transitionDur)
+                        .ease("elastic")
                         .attr("transform", function(d) {
                             prj = projection(d.geometry.coordinates)
                             return "translate(" + prj + ")";

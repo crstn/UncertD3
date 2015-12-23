@@ -58,26 +58,32 @@
           selection.attr('r', 4)
             .transition()
             .duration(function(d) {
-               return d.properties.accuracy*100;
+               return d.properties.accuracy*1000;
                //   return Math.floor((Math.random() * 800));
             })
             .ease(easing)
             .attr("transform", function(d) {
-              prj = projection(d.geometry.coordinates)
-              prj[0] = prj[0] + d.properties.accuracy * 5
-              prj[1] = prj[1] + d.properties.accuracy * 5
+              // prj = projection(d.geometry.coordinates)
+              prj = d.geometry.coordinates
+              // prj[0] = prj[0] + d.properties.accuracy * 5
+              // prj[1] = prj[1] + d.properties.accuracy * 5
+              prj[0] = d.properties.accuracy * 5
+              prj[1] = d.properties.accuracy * 5
               return "translate(" + prj + ")";
             })
             .transition()
             .duration(function(d) {
-              return d.properties.accuracy*100;
+              return d.properties.accuracy*1000;
               // return Math.floor((Math.random() * 1600))
             })
             .ease(easing)
             .attr("transform", function(d) {
-                prj = projection(d.geometry.coordinates)
-                prj[0] = prj[0] - d.properties.accuracy * 5
-                prj[1] = prj[1] - d.properties.accuracy * 5
+                // prj = projection(d.geometry.coordinates)
+                prj = d.geometry.coordinates
+                // prj[0] = prj[0] - d.properties.accuracy * 5
+                // prj[1] = prj[1] - d.properties.accuracy * 5
+                prj[0] = -d.properties.accuracy * 5
+                prj[1] = -d.properties.accuracy * 5
                 return "translate(" + prj + ")";
             })
             .each("end", repeat);

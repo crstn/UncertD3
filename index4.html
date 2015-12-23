@@ -50,39 +50,46 @@
             return "translate(" + projection(d.geometry.coordinates) + ")";
           })
 
+        startAnimation();
         repeat();
 
+        function startAnimation() {
+            selection.attr('r', 6)
+              .transition()
+              .duration(function(d) {
+                  return 500
+                //return Math.floor((Math.random() * 2000));
+              })
+              .attr("transform", function(d) {
+                prj = projection(d.geometry.coordinates)
+                prj[0] = prj[0] + d.properties.accuracy * 5
+                prj[1] = prj[1] + d.properties.accuracy * 5
+                return "translate(" + prj + ")";
+              })
+        }
+
         function repeat() {
-          selection.attr('r', 6)
+          selection
             .transition()
             .duration(function(d) {
-                return 2000
-              //return Math.floor((Math.random() * 2000));
-            })
-            .attr("transform", function(d) {
-              prj = projection(d.geometry.coordinates)
-              prj[0] = prj[0] + d.properties.accuracy * 10
-              prj[1] = prj[1] + d.properties.accuracy * 10
-              return "translate(" + prj + ")";
-            })
-            .transition()
-            .duration(function(d) {
-              return 4000
+              return 1000
               //   return Math.floor((Math.random() * 4000))
             })
             .attr("transform", function(d) {
               prj = projection(d.geometry.coordinates)
-              prj[0] = prj[0] - d.properties.accuracy * 10
-              prj[1] = prj[1] - d.properties.accuracy * 10
+              prj[0] = prj[0] - d.properties.accuracy * 5
+              prj[1] = prj[1] - d.properties.accuracy * 5
               return "translate(" + prj + ")";
             })
             .transition()
             .duration(function(d) {
-              return 2000
-              // return Math.floor((Math.random() * 2000))
+                return 1000
+              //return Math.floor((Math.random() * 2000));
             })
             .attr("transform", function(d) {
               prj = projection(d.geometry.coordinates)
+              prj[0] = prj[0] + d.properties.accuracy * 5
+              prj[1] = prj[1] + d.properties.accuracy * 5
               return "translate(" + prj + ")";
             })
             .each("end", repeat);

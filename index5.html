@@ -12,15 +12,6 @@
     <link rel="stylesheet" href="style.css" />
 
     <script>
-
-    $(document).ready(function() {
-        $('body').keypress(function(e) {
-            if (e.keyCode == 13) {
-                window.location.href = "index5_intro.html";
-            }
-        });
-    });
-
         d3.json("Data/blocks.json", function(json) {
             // create a first guess for the projection
             var center = d3.geo.centroid(json)
@@ -64,11 +55,12 @@
 
                 function repeat() {
 
-                    var transitionDur = 1000;
+                    var transitionDur = 200;
 
                     selection.attr('r', 5)
                         .transition()
                         .duration(transitionDur)
+                        .ease("quad")
                         .attr("transform", function(d) {
                             var angle = Math.random() * Math.PI * 2;
 
@@ -77,16 +69,9 @@
 
                             prj = projection(d.geometry.coordinates);
 
-                            prj[0] = prj[0] + x * 5;
-                            prj[1] = prj[1] + y * 5;
+                            prj[0] = prj[0] + x * 3;
+                            prj[1] = prj[1] + y * 3;
 
-                            return "translate(" + prj + ")";
-                        })
-                        .transition()
-                        .duration(transitionDur)
-                        .ease("elastic")
-                        .attr("transform", function(d) {
-                            prj = projection(d.geometry.coordinates)
                             return "translate(" + prj + ")";
                         })
                         .each("end", repeat);
@@ -105,5 +90,5 @@
 
         });
     </script>
-    
+
     </body>

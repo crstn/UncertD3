@@ -2,7 +2,7 @@
 <meta charset="utf-8">
 <body>
 
-<div id='js-geojson-example'></div>
+<div id="js-geojson-example"></div>
 
 <script src="js/jquery.js"></script>
 <script src="js/d3.js"></script>
@@ -10,16 +10,15 @@
 
 <link rel="stylesheet" href="style.css" />
 
-
 <script>
 
-$(document).ready(function() {
-    $('body').keypress(function(e) {
-        if (e.keyCode == 13) {
-            window.location.href = "index3_intro.html";
-        }
+    $(document).ready(function() {
+        $('body').keypress(function(e) {
+            if (e.keyCode == 13) {
+                window.location.href = "index2_intro.html";
+            }
+        });
     });
-});
 
   d3.json("Data/blocks.json", function(json) {
       // create a first guess for the projection
@@ -53,9 +52,8 @@ $(document).ready(function() {
              .attr("transform", function(d) {
                 return "translate(" + projection(d.geometry.coordinates) + ")";
              })
-             .attr('r', 5)
-             .attr('fill-opacity',  function(d) {
-               return opacity(d.properties.accuracy);
+             .attr('r', function(d) {
+               return radius(d.properties.accuracy);
              });
 
         });

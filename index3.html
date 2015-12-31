@@ -12,6 +12,14 @@
 
 <script>
 
+$(document).ready(function() {
+    $('body').keypress(function(e) {
+        if (e.keyCode == 13) {
+            window.location.href = "index4_intro.html";
+        }
+    });
+});
+
   d3.json("Data/blocks.json", function(json) {
       // create a first guess for the projection
       var center = d3.geo.centroid(json)
@@ -68,6 +76,4 @@
 
 </script>
 
-<body>
-<a href="index4.html" id="link">NEXT</a>
 </body>

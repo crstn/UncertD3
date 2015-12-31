@@ -1,25 +1,30 @@
-svg{
+svg {
     position: absolute;
     top: 20px;
     left: 50%;
     margin-left: -500px;
+    cursor: url(circle.png), auto;
 }
-
+body {
+    width: 750px;
+    margin: 10px auto;
+    font-family: "Helvetica"
+}
 .bubble {
-  fill: red;
+    fill: red;
 }
-
 .blox {
-  fill: lightgrey;
+    fill: lightgrey;
 }
-
-a#link{
-  position:absolute;
-  bottom: 10px;
-  left: 48%;
-  color: white;
-  background-color: black;
-  text-decoration: none;
-  padding: 2px;
-  font-family: "Helvetica"
+a#link {
+    position: absolute;
+    bottom: 10px;
+    left: 48%;
+    color: white;
+    background-color: black;
+    text-decoration: none;
+    padding: 2px;
+}
+h1, h3 {
+    text-align: center;
 }

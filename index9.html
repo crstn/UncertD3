@@ -15,7 +15,7 @@
         $(document).ready(function() {
             $('body').keypress(function(e) {
                 if (e.keyCode == 13) {
-                    window.location.href = "index6_intro.html";
+                    window.location.href = "index10_intro.html";
                 }
             });
         });
@@ -63,13 +63,14 @@
 
                 function repeat() {
 
-                    var transitionDur = 1000;
+                    var transitionDur = 200;
 
                     selection.attr('r', function(d) {
-                      return radius(d.properties.accuracy);
-                    })
+                            return radius(d.properties.accuracy);
+                        })
                         .transition()
                         .duration(transitionDur)
+                        .ease("quad")
                         .attr("transform", function(d) {
                             var angle = Math.random() * Math.PI * 2;
 
@@ -78,16 +79,9 @@
 
                             prj = projection(d.geometry.coordinates);
 
-                            prj[0] = prj[0] + x * 5;
-                            prj[1] = prj[1] + y * 5;
+                            prj[0] = prj[0] + x * 3;
+                            prj[1] = prj[1] + y * 3;
 
-                            return "translate(" + prj + ")";
-                        })
-                        .transition()
-                        .duration(transitionDur)
-                        .ease("elastic")
-                        .attr("transform", function(d) {
-                            prj = projection(d.geometry.coordinates)
                             return "translate(" + prj + ")";
                         })
                         .each("end", repeat);

@@ -15,7 +15,7 @@
         $(document).ready(function() {
             $('body').keypress(function(e) {
                 if (e.keyCode == 13) {
-                    window.location.href = "index6_intro.html";
+                    window.location.href = "index8_intro.html";
                 }
             });
         });
@@ -66,8 +66,11 @@
                     var transitionDur = 1000;
 
                     selection.attr('r', function(d) {
-                      return radius(d.properties.accuracy);
-                    })
+                            return radius(d.properties.accuracy);
+                        })
+                        .attr('fill-opacity', function(d) {
+                            return opacity(d.properties.accuracy);
+                        })
                         .transition()
                         .duration(transitionDur)
                         .attr("transform", function(d) {

@@ -3,7 +3,7 @@ svg {
     top: 20px;
     left: 50%;
     margin-left: -500px;
-    cursor: url(circle.png), auto;
+    cursor: url("../circle.png"), auto;
 }
 body {
     width: 750px;
@@ -27,4 +27,20 @@ a#link {
 }
 h1, h3 {
     text-align: center;
+}
+.pure-form-stacked label, .pure-button{
+  margin-top: 15px;
+}
+
+h2 {
+  margin-bottom: 0;
+}
+
+figure{
+  float: left;
+  margin: 0 50px 15px 0;
+}
+
+figcaption{
+  margin: 5px 0;
 }

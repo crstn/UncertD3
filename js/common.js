@@ -10,13 +10,13 @@ var car = d3.select("#js-geojson-example").append("svg")
       .attr("height", height);
 
 // function to scale bubble size based on data (GPS accuracy)
-var radius = d3.scale.sqrt()
-      .domain([0, 7])
-      .range([2, 10]);
+var radius = d3.scale.linear()
+      .domain([1, 7])
+      .range([3, 10]);
 
 // function to scale bubble opacity based on data (GPS accuracy)
 var opacity = d3.scale.linear()
-      .domain([0, 7])
+      .domain([1, 7])
       .range([1, 0.3]);
 
 function randomize(cardata){

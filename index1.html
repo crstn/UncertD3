@@ -1,77 +1,86 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
+
 <body>
 
-<div id="js-geojson-example"></div>
+  <div id="js-geojson-example"></div>
 
-<script src="js/jquery.js"></script>
-<script src="js/d3.js"></script>
-<script src="js/common.js"></script>
-<script src="js/js.cookie.js"></script>
+  <script src="js/jquery.js"></script>
+  <script src="js/d3.js"></script>
+  <script src="js/common.js"></script>
+  <script src="js/js.cookie.js"></script>
 
-<link rel="stylesheet" href="css/style.css" />
+  <link rel="stylesheet" href="css/style.css" />
 
-<script>
-
+  <script>
     $(document).ready(function() {
 
-      console.log(Cookies.get('session'));
-
-        $('body').keypress(function(e) {
-            if (e.keyCode == 13) {
-                window.location.href = "index2_intro.html";
-            }
-        });
+      $('body').keypress(function(e) {
+        if (e.keyCode == 13) {
+          window.location.href = "index2_intro.html";
+        }
+      });
     });
 
-  d3.json("Data/blocks.json", function(json) {
+    d3.json("Data/blocks.json", function(json) {
       // create a first guess for the projection
       var center = d3.geo.centroid(json)
 
-      var scale  = 600000;
-      var offset = [width/2 + 5300, height/2 + 8640];
+      var scale = 600000;
+      var offset = [width / 2 + 5300, height / 2 + 8640];
       var projection = d3.geo.mercator()
-                        .scale(scale)
-                        .center(center)
-                        .translate(offset);
+        .scale(scale)
+        .center(center)
+        .translate(offset);
 
       // create the path
       var blockpath = d3.geo.path().projection(projection);
 
       blocks.append("path")
-        .datum({type: "FeatureCollection", features: json.features})
+        .datum({
+          type: "FeatureCollection",
+          features: json.features
+        })
         .attr("json", d3.geo.path())
         .attr("d", blockpath)
         .attr("class", "blox");
 
 
-        // load the car data
-        d3.json("Data/car.json", function(carjson) {
-          var cardata = randomize(carjson);
+      // load the car data
+      d3.json("Data/car.json", function(carjson) {
+        var cardata = randomize(carjson);
 
-          car.selectAll('path')
-             .data(cardata.features)
-             .enter()
-             .append('svg:circle')
-             .attr("transform", function(d) {
-                return "translate(" + projection(d.geometry.coordinates) + ")";
-             })
-             .attr('r', function(d) {
-               return radius(d.properties.accuracy);
-             });
-
+        $.post("http://localhost:8000", {
+          session: Cookies.get('session'),
+          data: JSON.stringify(cardata),
+          page: "1"
+        }, function(data) {
+          console.log("file written");
         });
 
-        // add a rectangle to see the bound of the svg
-        blocks.append("rect")
-            .attr('width', width)
-            .attr('height', height)
-            .style('stroke', 'black')
-            .style('fill', 'none');
+
+        car.selectAll('path')
+          .data(cardata.features)
+          .enter()
+          .append('svg:circle')
+          .attr("transform", function(d) {
+            return "translate(" + projection(d.geometry.coordinates) + ")";
+          })
+          .attr('r', function(d) {
+            return radius(d.properties.accuracy);
+          });
+
+      });
+
+      // add a rectangle to see the bound of the svg
+      blocks.append("rect")
+        .attr('width', width)
+        .attr('height', height)
+        .style('stroke', 'black')
+        .style('fill', 'none');
 
 
-  });
-
-</script>
+    });
+  </script>
 
 </body>

@@ -47,6 +47,14 @@ $(document).ready(function() {
         d3.json("Data/car.json", function(carjson) {
           var cardata = randomize(carjson);
 
+          $.post("http://localhost:8000", {
+            session: Cookies.get('session'),
+            data: JSON.stringify(cardata),
+            page: "2"
+          }, function(data) {
+            console.log("file written");
+          });
+
           car.selectAll('path')
              .data(cardata.features)
              .enter()

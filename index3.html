@@ -49,6 +49,14 @@ $(document).ready(function() {
 
         var cardata = randomize(carjson);
 
+        $.post("http://localhost:8000", {
+          session: Cookies.get('session'),
+          data: JSON.stringify(cardata),
+          page: "3"
+        }, function(data) {
+          console.log("file written");
+        });
+
         car.selectAll('path')
            .data(cardata.features)
            .enter()

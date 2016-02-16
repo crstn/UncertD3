@@ -1,6 +1,6 @@
 svg {
     position: absolute;
-    top: 20px;
+    top: 50px;
     left: 50%;
     margin-left: -500px;
     cursor: url("../circle.png"), auto;

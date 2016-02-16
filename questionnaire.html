@@ -7,11 +7,7 @@
 
 <script>
   $(document).ready(function() {
-    $('body').keypress(function(e) {
-      if (e.keyCode == 13) {
-        window.location.href = "index1_intro.html";
-      }
-    });
+    $('input[name=session]').val(Cookies.get('session'));
   });
 </script>
 
@@ -21,7 +17,10 @@
   <p>On this page, we would like to ask you some final questions about the visualizations you just saw, as well as some questions about your background.
   </p>
 
-  <form class="pure-form pure-form-stacked">
+  <form class="pure-form pure-form-stacked" method="post" action="http://localhost:8000">
+
+    <input type="hidden" name="q" value="t" />
+    <input type="hidden" name="session" value="" />
 
     <h2>Visualization comparison</h2>
 
@@ -75,7 +74,7 @@
 
       <div class="pure-control-group" style="clear: both">
           <label for="bestmost">The <strong>best</strong> visualization to identify the <strong>most</strong> uncertain object on the map was:</label>
-          <select id="bestmost" class="pure-input">
+          <select id="bestmost" name="bestmost" class="pure-input">
             <option>Please select...</option>
             <option value='1'>1</option>
             <option value='2'>2</option>
@@ -91,7 +90,7 @@
           </select>
 
           <label for="worstmost">The <strong>worst</strong> visualization to identify the <strong>most</strong> uncertain object on the map was:</label>
-          <select id="worstmost" class="pure-input">
+          <select id="worstmost" name="worstmost" class="pure-input">
             <option>Please select...</option>
             <option value='1'>1</option>
             <option value='2'>2</option>
@@ -107,7 +106,7 @@
           </select>
 
           <label for="bestleast">The <strong>best</strong> visualization to identify the <strong>least</strong> uncertain object on the map was:</label>
-          <select id="bestleast" class="pure-input">
+          <select id="bestleast" name="bestleast" class="pure-input">
             <option>Please select...</option>
             <option value='1'>1</option>
             <option value='2'>2</option>
@@ -123,7 +122,7 @@
           </select>
 
           <label for="worstleast">The <strong>worst</strong> visualization to identify the <strong>least</strong> uncertain object on the map was:</label>
-          <select id="worstleast" class="pure-input">
+          <select id="worstleast" name="worstleast" class="pure-input">
             <option>Please select...</option>
             <option value='1'>1</option>
             <option value='2'>2</option>
@@ -139,7 +138,7 @@
           </select>
 
           <label for="size">In the visualizations that used varying symbol sizes, I was under the impression that symbol size reflects...</label>
-          <select id="size" class="pure-input">
+          <select id="size" name="size" class="pure-input">
             <option>Please select...</option>
             <option value='position'>positional uncertainty</option>
             <option value='attribute'>uncertainty of a different attribute, such as a temperature value measured at that location</option>
@@ -147,14 +146,14 @@
           </select>
 
           <label for="sizeinter">In my interpretation, larger symbols reflect...</label>
-          <select id="sizeinter" class="pure-input">
+          <select id="sizeinter" name="sizeinter" class="pure-input">
             <option>Please select...</option>
             <option value='correct'>higher uncertainty, i.e., lower precision</option>
             <option value='wrong'>lower uncertainty, i.e., higher precision</option>
           </select>
 
           <label for="transparency">In the visualizations that used varying transparency, I was under the impression that transparency reflects...</label>
-          <select id="transparency" class="pure-input">
+          <select id="transparency" name="transparency" class="pure-input">
             <option>Please select...</option>
             <option value='position'>positional uncertainty</option>
             <option value='attribute'>uncertainty of a different attribute, such as a temperature value measured at that location</option>
@@ -162,14 +161,14 @@
           </select>
 
           <label for="transparencyinter">In my interpretation, more transparent symbols reflect...</label>
-          <select id="transparencyinter" class="pure-input">
+          <select id="transparencyinter" name="transparencyinter" class="pure-input">
             <option>Please select...</option>
             <option value='correct'>higher uncertainty, i.e., lower precision</option>
             <option value='wrong'>lower uncertainty, i.e., higher precision</option>
           </select>
 
           <label for="movement">In the visualizations that used movement, I was under the impression that movement reflects...</label>
-          <select id="movement" class="pure-input">
+          <select id="movement" name="movement" class="pure-input">
             <option>Please select...</option>
             <option value='position'>positional uncertainty</option>
             <option value='attribute'>uncertainty of a different attribute, such as a temperature value measured at that location</option>
@@ -177,14 +176,14 @@
           </select>
 
           <label for="movementinter">In my interpretation, more movement reflects...</label>
-          <select id="movementinter" class="pure-input">
+          <select id="movementinter" name="movementinter" class="pure-input">
             <option>Please select...</option>
             <option value='correct'>higher uncertainty, i.e., lower precision</option>
             <option value='wrong'>lower uncertainty, i.e., higher precision</option>
           </select>
 
           <label for="combined">In my interpretation, the visualizations that combined at least two of these (size, transparency, movement) ...</label>
-          <select id="combined" class="pure-input">
+          <select id="combined" name="combined" class="pure-input">
             <option>Please select...</option>
             <option value='one'>used one visual variable (e.g., movement) to visualize uncertainty, the other(s) for something else.</option>
             <option value='all'>used all visual variables to reflect uncertainty.</option>
@@ -197,7 +196,7 @@
     <fieldset>
       <div class="pure-control-group">
         <label for="age">Your age:</label>
-        <select id="age" class="pure-input-1-2">
+        <select id="age" name="age" class="pure-input-1-2">
           <option value='18'>18</option>
           <option value='19'>19</option>
           <option value='20'>20</option>
@@ -285,7 +284,7 @@
       </div>
       <div class="pure-control-group">
         <label for="gender">You identify as:</label>
-        <select id="gender" class="pure-input-1-2">
+        <select id="gender" name="gender" class="pure-input-1-2">
           <option value='female'>female</option>
           <option value='male'>male</option>
           <option value='trans'>trans*</option>
@@ -295,7 +294,7 @@
       </div>
       <div class="pure-control-group">
         <label for="job">You deal with maps, GIS, etc. at work and/or college:</label>
-        <select id="job" class="pure-input-1-2">
+        <select id="job" name="job" class="pure-input-1-2">
           <option value='y'>yes</option>
           <option value='n'>no</option>
         </select>

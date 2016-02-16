@@ -54,8 +54,6 @@ class ServerHandler(SimpleHTTPServer.SimpleHTTPRequestHandler):
         # for item in form.list:
         #     logging.warning(item)
 
-        data = form.getvalue('data')
-        page = form.getvalue('page')
         session = form.getvalue('session')
 
         directory = 'experiments/'+session
@@ -63,11 +61,37 @@ class ServerHandler(SimpleHTTPServer.SimpleHTTPRequestHandler):
         if not os.path.exists(directory):
             os.makedirs(directory)
 
-        with open(directory+"/"+page+".json", "w") as text_file:
-            text_file.write(data)
+        # this is to process the final questionnaire:
+        if(form.getvalue('q') == 't'):
+            header = ""
+            values = ""
 
-        logging.warning("\n")
-        SimpleHTTPServer.SimpleHTTPRequestHandler.do_GET(self)
+            for key in form.keys():
+                header += str(key)+", "
+                values += str(form.getvalue(str(key)))+", "
+
+
+            with open(directory+"/questionnaire.txt", "w") as text_file:
+                    text_file.write(header+"\n")
+                    text_file.write(values+"\n")
+
+
+
+            # redirect to thank you page
+            self.send_response(301)
+            self.send_header('Location','http://localhost:8000/thanks.html')
+            self.end_headers()
+
+        # this process the randomized car json datasets
+        else:
+            data = form.getvalue('data')
+            page = form.getvalue('page')
+
+            with open(directory+"/"+page+".json", "w") as text_file:
+                text_file.write(data)
+
+            logging.warning("\n")
+            SimpleHTTPServer.SimpleHTTPRequestHandler.do_GET(self)
 
 Handler = ServerHandler
 

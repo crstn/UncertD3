@@ -70,12 +70,9 @@ class ServerHandler(SimpleHTTPServer.SimpleHTTPRequestHandler):
                 header += str(key)+", "
                 values += str(form.getvalue(str(key)))+", "
 
-
-            with open(directory+"/questionnaire.txt", "w") as text_file:
+            with open("experiments/questionnaires.csv", "a") as text_file:
                     text_file.write(header+"\n")
                     text_file.write(values+"\n")
-
-
 
             # redirect to thank you page
             self.send_response(301)

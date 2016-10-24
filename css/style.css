@@ -2,7 +2,7 @@ svg {
     position: absolute;
     top: 50px;
     left: 50%;
-    margin-left: -500px;
+    margin-left: -360px;
     cursor: url("../circle.png"), auto;
 }
 body {

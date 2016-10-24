@@ -26,8 +26,6 @@
       // create a first guess for the projection
       var center = d3.geo.centroid(json)
 
-      var scale = 600000;
-      var offset = [width / 2 + 5300, height / 2 + 8640];
       var projection = d3.geo.mercator()
         .scale(scale)
         .center(center)

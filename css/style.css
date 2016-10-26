@@ -4,6 +4,8 @@ svg {
     left: 50%;
     margin-left: -360px;
     cursor: url("../circle.png"), auto;
+    background-image: url("../Data/background.png");
+    background-size: 720px;
 }
 body {
     width: 750px;

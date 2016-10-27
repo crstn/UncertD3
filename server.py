@@ -25,9 +25,8 @@ directory = 'experiments/'+session
 try:
     if not os.path.exists(directory):
         os.makedirs(directory, 0777)
-    else:
-        logging.warning(directory + " exists")
-        os.chmod(directory, 0777)   # just in case
+    # else:
+    #     os.chmod(directory, 0777)   # just in case
 except Exception as e:
     logging.error(type(e))
     logging.error(e.args)

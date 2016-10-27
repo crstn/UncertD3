@@ -21,86 +21,65 @@
             });
         });
 
-        d3.json("Data/blocks.json", function(json) {
-            // create a first guess for the projection
-            var center = d3.geo.centroid(json)
 
-            var projection = d3.geo.mercator()
-                .scale(scale)
-                .center(center)
-                .translate(offset);
+        // load the car data
 
-            // create the path
-            var blockpath = d3.geo.path().projection(projection);
+        d3.json("Data/car.json", function(carjson) {
 
-            // load the car data
+            var cardata = randomize(carjson);
 
-            d3.json("Data/car.json", function(carjson) {
-
-                var cardata = randomize(carjson);
-
-                $.post("server.py", {
-                  session: Cookies.get('session'),
-                  data: JSON.stringify(cardata),
-                  page: "7"
-                }, function(data) {
-                  console.log("file written");
-                });
-
-                var selection = car.selectAll('path')
-                    .data(cardata.features)
-                    .enter()
-                    .append('svg:circle')
-                    .attr("transform", function(d) {
-                        return "translate(" + projection(d.geometry.coordinates) + ")";
-                    })
-
-                repeat();
-
-                function repeat() {
-
-                    var transitionDur = 1000;
-
-                    selection.attr('r', function(d) {
-                            return radius(d.properties.accuracy);
-                        })
-                        .attr('fill-opacity', function(d) {
-                            return opacity(d.properties.accuracy);
-                        })
-                        .transition()
-                        .duration(transitionDur)
-                        .attr("transform", function(d) {
-                            var angle = Math.random() * Math.PI * 2;
-
-                            x = Math.cos(angle) * d.properties.accuracy;
-                            y = Math.sin(angle) * d.properties.accuracy;
-
-                            prj = projection(d.geometry.coordinates);
-
-                            prj[0] = prj[0] + x * 5;
-                            prj[1] = prj[1] + y * 5;
-
-                            return "translate(" + prj + ")";
-                        })
-                        .transition()
-                        .duration(transitionDur)
-                        .ease("elastic")
-                        .attr("transform", function(d) {
-                            prj = projection(d.geometry.coordinates)
-                            return "translate(" + prj + ")";
-                        })
-                        .each("end", repeat);
-                }
-
-
+            $.post("server.py", {
+                session: Cookies.get('session'),
+                data: JSON.stringify(cardata),
+                page: "7"
+            }, function(data) {
+                console.log("file written");
             });
 
-            // add a rectangle to see the bound of the svg
-            blocks.append("rect")
-                .attr('width', width)
-                .attr('height', height)
-                .style('stroke', 'black')
-                .style('fill', 'none');
+            var selection = car.selectAll('path')
+                .data(cardata.features)
+                .enter()
+                .append('svg:circle')
+                .attr("transform", function(d) {
+                    return "translate(" + projection(d.geometry.coordinates) + ")";
+                })
+
+            repeat();
+
+            function repeat() {
+
+                var transitionDur = 1000;
+
+                selection.attr('r', function(d) {
+                        return radius(d.properties.accuracy);
+                    })
+                    .attr('fill-opacity', function(d) {
+                        return opacity(d.properties.accuracy);
+                    })
+                    .transition()
+                    .duration(transitionDur)
+                    .attr("transform", function(d) {
+                        var angle = Math.random() * Math.PI * 2;
+
+                        x = Math.cos(angle) * d.properties.accuracy;
+                        y = Math.sin(angle) * d.properties.accuracy;
+
+                        prj = projection(d.geometry.coordinates);
+
+                        prj[0] = prj[0] + x * 5;
+                        prj[1] = prj[1] + y * 5;
+
+                        return "translate(" + prj + ")";
+                    })
+                    .transition()
+                    .duration(transitionDur)
+                    .ease("elastic")
+                    .attr("transform", function(d) {
+                        prj = projection(d.geometry.coordinates)
+                        return "translate(" + prj + ")";
+                    })
+                    .each("end", repeat);
+            }
 
 
         });

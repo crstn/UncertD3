@@ -21,17 +21,6 @@ $(document).ready(function() {
     });
 });
 
-  d3.json("Data/blocks.json", function(json) {
-      // create a first guess for the projection
-      var center = d3.geo.centroid(json)
-
-      var projection = d3.geo.mercator()
-                        .scale(scale)
-                        .center(center)
-                        .translate(offset);
-
-      // create the path
-      var blockpath = d3.geo.path().projection(projection);
 
       // load the car data
 
@@ -63,15 +52,6 @@ $(document).ready(function() {
 
       });
 
-      // add a rectangle to see the bound of the svg
-      blocks.append("rect")
-          .attr('width', width)
-          .attr('height', height)
-          .style('stroke', 'black')
-          .style('fill', 'none');
-
-
-  });
 
 </script>
 <p style="text-align: center">Place the red circle on the

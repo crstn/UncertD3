@@ -3,15 +3,23 @@ var width  = 720,
 
 var scale = 530000;
 var offset = [width / 2 + 22850, height / 2 - 9170];
+var center = [-71.47496712465082, 41.525055483742605]
 
-
-var blocks = d3.select("#js-geojson-example").append("svg")
-      .attr("width", width)
-      .attr("height", height);
+var projection = d3.geo.mercator()
+  .scale(scale)
+  .center(center)
+  .translate(offset);
 
 var car = d3.select("#js-geojson-example").append("svg")
       .attr("width", width)
       .attr("height", height);
+
+// add a rectangle to see the bound of the svg
+car.append("rect")
+  .attr('width', width)
+  .attr('height', height)
+  .style('stroke', 'black')
+  .style('fill', 'none');
 
 // function to scale bubble size based on data (GPS accuracy)
 var radius = d3.scale.linear()

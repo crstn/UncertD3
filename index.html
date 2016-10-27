@@ -2,34 +2,51 @@
 <meta charset="utf-8">
 <link rel="stylesheet" href="css/pure-min.css" />
 <link rel="stylesheet" href="css/style.css" />
-<script src="js/jquery.js"></script>
-<script src="js/js.cookie.js"></script>
-<script>
-    $(document).ready(function() {
 
-      Cookies.set('session', Date.now(), { expires: 7, path: '' });
-
-      console.log(Cookies.get('session'));
-
-        $('body').keypress(function(e) {
-            if (e.keyCode == 13) {
-                window.location.href = "index1_intro.html";
-            }
-        });
-    });
-</script>
 <body>
     <h1>Testing Visualizations of Uncertainty</h1>
 
-    <p>In the next minutes, you will be shown different visualizations of uncertainty. You will be asked to identify the most or least uncertain object on a map by placing a circle around the corresponding object, like in this example: Try moving the cursor inside the grey box. It will turn into a circle. You will be asked to place this circle on the objects that you believe are the most or least uncertain on the map and then press enter.
+    <p>In the next minutes, you will be shown different visualizations of uncertainty. That data you will see is a series of points that could be generated from a GPS, for example, overlaid on top of a simple street map. You will be asked to identify the most or least uncertain of those points based on their visualization, which will indicate uncertainty in different ways.</p>
+
+    <p>Try moving your mouse pointer on the map. It will turn into a circle. You will be asked to place this circle on the point that you believe is the most or least uncertain on the map, and then press enter.
     </p>
 
-    <div id='js-geojson-example' style="Width: 750px; height: 400px; border: 1px solid black; background-color: lightgrey; cursor: url(circle.png), auto;"></div>
+    <div id="js-geojson-example"></div>
 
-    <p>Try to solve this task quickly, but do not rush it – we want you to consider the different objects shown and then make a decision.</p>
+    <p>Try to solve this task quickly, but do not rush it – we want you to consider the different points shown and then make a decision. There are no right or wrong answers – please select the point that you believe is most or least uncertain, based on the respective visualization. Participation should not take more than 10 minutes.</p>
 
-    <p><strong>Disclaimer</strong>. While we do capture the screen, your voice, and your pupil movement using the eye tracker, we will not store any personal information about you for this study. You can choose to abort the test at any point for any reason. In this case, your results will not be taken into account in our evaluation.</p>
+    <p><strong>Contact</strong>If you have any questions about this experiment, please contact <a href="http://carsten.io/contact">Carsten Kessler</a>.</p>
 
     <h3>Press ENTER to start.</h3>
 
+
+    <script src="js/jquery.js"></script>
+    <script src="js/d3.js"></script>
+    <script src="js/common.js"></script>
+    <script src="js/js.cookie.js"></script>
+    <script>
+        $(document).ready(function() {
+
+            $('body').keypress(function(e) {
+                if (e.keyCode == 13) {
+                    window.location.href = "index1_intro.html";
+                }
+            });
+        });
+
+        // load the car data
+        d3.json("Data/car.json", function(carjson) {
+            car.selectAll('path')
+                .data(carjson.features)
+                .enter()
+                .append('svg:circle')
+                .attr("transform", function(d) {
+                    return "translate(" + projection(d.geometry.coordinates) + ")";
+                })
+                .attr('r', function(d) {
+                    return 3;
+                });
+
+        });
+    </script>
 </body>

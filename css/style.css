@@ -1,8 +1,5 @@
 svg {
-    position: absolute;
-    top: 50px;
-    left: 50%;
-    margin-left: -360px;
+    margin: 10px auto;
     cursor: url("../circle.png"), auto;
     background-image: url("../Data/background.png");
     background-size: 720px;

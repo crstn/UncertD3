@@ -34,23 +34,13 @@
             var blockpath = d3.geo.path().projection(projection);
 
 
-            blocks.append("path")
-                .datum({
-                    type: "FeatureCollection",
-                    features: json.features
-                })
-                .attr("json", d3.geo.path())
-                .attr("d", blockpath)
-                .attr("class", "blox");
-
-
             // load the car data
 
             d3.json("Data/car.json", function(carjson) {
 
                 var cardata = randomize(carjson);
 
-                $.post("http://localhost:8000", {
+                $.post("server.py", {
                   session: Cookies.get('session'),
                   data: JSON.stringify(cardata),
                   page: "5"

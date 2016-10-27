@@ -34,16 +34,6 @@
             var blockpath = d3.geo.path().projection(projection);
 
 
-            blocks.append("path")
-                .datum({
-                    type: "FeatureCollection",
-                    features: json.features
-                })
-                .attr("json", d3.geo.path())
-                .attr("d", blockpath)
-                .attr("class", "blox");
-
-
             // load the car data
 
             d3.json("Data/car.json", function(carjson) {

@@ -2,8 +2,8 @@
 <meta charset="utf-8">
 
 <body>
-    <p style="text-align: center">Place the red circle on the
-        <strong>least</strong> uncertain object on the map, then press enter.</p>
+    <p style="text-align: center">Task 8 of 11: Place the red circle on the
+        <strong>least</strong> uncertain object on the map, then click.</p>
 
     <div id='js-geojson-example'></div>
 
@@ -15,13 +15,10 @@
     <link rel="stylesheet" href="css/style.css" />
 
     <script>
-        $(document).ready(function() {
-            $('body').keypress(function(e) {
-                if (e.keyCode == 13) {
-                    window.location.href = "index9_intro.html";
-                }
-            });
-        });
+    $(document).ready(function() {
+        // add the listener that will log the mouse coords and forward to the next page
+        addListener("index9.html", 8);
+    });
 
         // load the car data
 
@@ -29,7 +26,7 @@
 
             var cardata = randomize(carjson);
 
-            $.post("http://localhost:8000", {
+            $.post("server.py", {
                 session: Cookies.get('session'),
                 data: JSON.stringify(cardata),
                 page: "8"

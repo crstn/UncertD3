@@ -8,16 +8,18 @@
 
     <p>In the next minutes, you will be shown different visualizations of uncertainty. That data you will see is a series of points that could be generated from a GPS, for example, overlaid on top of a simple street map. You will be asked to identify the most or least uncertain of those points based on their visualization, which will indicate uncertainty in different ways.</p>
 
-    <p>Try moving your mouse pointer on the map. It will turn into a circle. You will be asked to place this circle on the point that you believe is the most or least uncertain on the map, and then press enter.
+    <p>Please not that this test <strong>does not work on touchscreen devices</strong> such as smart phones or tablets. Please make sure that you are using a laptop or desktop computer if you would like to participate.</p>
+
+    <p>Try moving your mouse pointer on the map. It will turn into a circle. You will be asked to place this circle on the point that you believe is the most or least uncertain on the map, and then click.
     </p>
 
     <div id="js-geojson-example"></div>
 
     <p>Try to solve this task quickly, but do not rush it – we want you to consider the different points shown and then make a decision. There are no right or wrong answers – please select the point that you believe is most or least uncertain, based on the respective visualization. Participation should not take more than 10 minutes.</p>
 
-    <p><strong>Contact</strong>If you have any questions about this experiment, please contact <a href="http://carsten.io/contact">Carsten Kessler</a>.</p>
+    <p><strong>Contact</strong>: If you have any questions about this experiment, please contact <a href="http://carsten.io/contact">Carsten Kessler</a>.</p>
 
-    <h3>Press ENTER to start.</h3>
+    <h1><a href="index1.html">START</a></h1>
 
 
     <script src="js/jquery.js"></script>
@@ -25,14 +27,9 @@
     <script src="js/common.js"></script>
     <script src="js/js.cookie.js"></script>
     <script>
-        $(document).ready(function() {
 
-            $('body').keypress(function(e) {
-                if (e.keyCode == 13) {
-                    window.location.href = "index1_intro.html";
-                }
-            });
-        });
+       Cookies.set('session', Date.now(), { expires: 7, path: '' });
+       console.log(Cookies.get('session'));
 
         // load the car data
         d3.json("Data/car.json", function(carjson) {

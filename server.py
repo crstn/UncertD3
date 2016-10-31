@@ -45,7 +45,7 @@ if (form.getvalue('q') == 't'):
         values += str(form.getvalue(str(key)))+", "
 
     with open(csv, "a") as text_file:
-            text_file.write(header+"\n")
+            # text_file.write(header+"\n")
             text_file.write(values+"\n")
 
     os.chmod(csv, 0777)
@@ -66,8 +66,8 @@ if (form.getvalue('q') == 't'):
     print 'js.src = "//connect.facebook.net/en_US/sdk.js#xfbml=1&version=v2.8&appId=225759177445380";'
     print 'fjs.parentNode.insertBefore(js, fjs);'
     print '}(document, "script", "facebook-jssdk"));</script>'
-    print '<h1 style ="margin-top: 100px">Thank you.</h1>'
-    print '<p style="text-align: center"><a href="https://twitter.com/share" class="twitter-share-button" data-text="Help @carstenkessler do some research on visualizations of uncertainty by participating in this quick online test:" data-url="http://carsten.io/uncertainty" data-lang="en" data-show-count="false">Tweet</a></p><div class="fb-share-button" style="float: left"><a class="fb-xfbml-parse-ignore" target="_blank" href="https://www.facebook.com/sharer/sharer.php?u&amp;src=sdkpreparse">Share</a></div><script async src="//platform.twitter.com/widgets.js" charset="utf-8"></script>'
+    print '<img src="thanks.gif" align="center" />'
+    print '<p style="text-align: center"><a href="https://twitter.com/share" class="twitter-share-button" data-text="Help @carstenkessler do some research on visualizations of uncertainty by participating in this quick online test:" data-url="http://carsten.io/uncertainty" data-lang="en" data-show-count="false">Tweet</a></p><div class="fb-share-button" style="margin-left: 46.7%"><a class="fb-xfbml-parse-ignore" target="_blank" href="https://www.facebook.com/sharer/sharer.php?u&amp;src=sdkpreparse">Share</a></div><p style="text-align: center">... or share this link any other way you like: <a href="http://carsten.io/uncertainty">http://carsten.io/uncertainty</a>.</p><script async src="//platform.twitter.com/widgets.js" charset="utf-8"></script>'
     print '</body>'
 
 # # process the timing and coords of a single page
@@ -75,8 +75,6 @@ elif (form.getvalue('s') == 't'):
 
     log = directory+'/log.txt'
     logtxt = str(form.getvalue('page'))+', '+str(form.getvalue('time'))+', '+str(form.getvalue('x'))+', '+str(form.getvalue('y'))+'\n'
-
-    logging.warning(logtxt)
 
     with open(log, "a") as text_file:
         text_file.write(logtxt)

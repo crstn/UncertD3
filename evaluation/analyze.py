@@ -44,6 +44,31 @@ def sortCounts(labels, counts):
     return newlabels, newcounts
 
 
+def getresponsetimes(responses):
+
+    responsetimes = []
+
+    for r in responses:
+        logfile = str(r["session"])+'/log.txt'
+        with open(logfile) as f:
+            lines = f.readlines()
+
+            for l in lines:
+                parts = l.split(', ')
+                page = int(parts[0])
+                time = int(parts[1])
+
+                # our pages start at 1, but the list indices at zero, so always subtract 1:
+                if len(responsetimes) > page-1:
+                    responsetimes[page-1].append(time)
+                else:
+                    responsetimes.append([time])
+
+    return responsetimes
+
+
+
+
 responses = []
 os.chdir(os.path.expanduser("~")+"/Dropbox/Code/UncertD3/evaluation/data/")
 
@@ -132,3 +157,25 @@ plt.suptitle("Age distribution")
 plt.savefig("../plots/age.pdf")
 
 plt.clf()
+
+
+# make a box plot of the response times:
+plt.boxplot(getresponsetimes(responses), 0, '')
+plt.suptitle("Response times")
+plt.savefig("../plots/responsetimes.pdf")
+
+plt.clf()
+
+# let's take a look at the GeoJSON files and click locations:
+# iterate through all individual participant responses:
+for r in responses:
+    for i in range(1, 12):
+        with open(str(r["session"])+"/"+str(i)+".json") as f:
+            data = json.load(f)
+
+        # for feature in data['features']:
+        #     print feature['properties']['accuracy']
+        #     coords = feature['geometry']['coordinates']
+            # print Point(coords[0],coords[1]).distance(Point(coords[0],coords[1]))
+    # path = str(r["session"])+"/log.txt"
+    # urllib.urlretrieve ("http://carsten.io/uncertainty/experiments/"+path, path)

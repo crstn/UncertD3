@@ -1,7 +1,10 @@
-import urllib, os, csv, matplotlib
+import urllib, os, csv, matplotlib, json
 import matplotlib.pyplot as plt
+from shapely.geometry import Point
 
 # some helper functions:
+
+# counts the occurances of a certain key in a dictionary (dic).
 def gatherPieData(dic, key):
     labels = []
     counts = []
@@ -13,7 +16,33 @@ def gatherPieData(dic, key):
             labels.append(row[key])
             counts.append(1)
 
-    return labels, counts
+    return sortCounts(labels, counts)
+
+# puts the labels and corresponding counts in alphabetic order
+def sortCounts(labels, counts):
+    newlabels = []
+    newcounts = []
+
+    # add leading zeros so that the sorting works:
+    for i in range(len(labels)):
+        if len(labels[i]) == 1:
+            labels[i] = "0"+labels[i]
+
+    # repeat until the input list is empty:
+    while labels:
+        i = labels.index(min(labels))
+        newlabels.append(labels[i])
+        newcounts.append(counts[i])
+        del labels[i]
+        del counts[i]
+
+    # remove leading zeros again:
+    for i in range(len(newlabels)):
+        if newlabels[i][0] == "0":
+            newlabels[i] = newlabels[i][1]
+
+    return newlabels, newcounts
+
 
 responses = []
 os.chdir(os.path.expanduser("~")+"/Dropbox/Code/UncertD3/evaluation/data/")
@@ -53,7 +82,7 @@ for r in responses:
 # on to the actual analysis:
 # first, some pie charts
 matplotlib.style.use("fivethirtyeight")
-colors = ['#008fd5', '#fc4f30', '#e5ae38', '#6d904f', '#8b8b8b', '#810f7c']
+ftecolors = ['#008fd5', '#fc4f30', '#e5ae38', '#6d904f', '#8b8b8b', '#810f7c']
 
 # gender:
 
@@ -61,28 +90,45 @@ colors = ['#008fd5', '#fc4f30', '#e5ae38', '#6d904f', '#8b8b8b', '#810f7c']
 labels, counts = gatherPieData(responses, "gender")
 total = sum(counts)
 
-plt.pie(counts, labels=labels, colors=colors, autopct=lambda(p): '{:.0f}'.format(p * total / 100), shadow=False, startangle=90, explode = (0.05, 0))
+plt.pie(counts, labels=labels, colors=ftecolors, autopct=lambda(p): '{:.0f}'.format(p * total / 100), shadow=False, startangle=90)
 # Set aspect ratio to be equal so that pie is drawn as a circle.
 plt.axis('equal')
 plt.suptitle('Gender breakdown')
 plt.savefig("../plots/gender.pdf")
 
-
-
 plt.clf()
 
 # best and worst viz types
 
-for t in ["bestmost", "bestleast", "worstmost", "worstleast"]:
+d = {"bestmost": "Best visualization to identify the most uncertain object",
+     "bestleast": "Best visualization to identify the least uncertain object",
+     "worstmost": "Worst visualization to identify the most uncertain object",
+     "worstleast": "Worst visualization to identify the least uncertain object"}
 
-    labels, counts = gatherPieData(responses, t)
+colors = ['#008fd5', '#33bbff', '#005f8f', '#fc4322', '#B51D03', '#FB310E', '#DD2403', '#C92103', '#fc4f30', '#A11A02', '#F12704', '#8b8b8b']
+
+for key, value in d.iteritems():
+
+    labels, counts = gatherPieData(responses, key)
     total = sum(counts)
 
     plt.pie(counts, labels=labels, colors=colors, autopct=lambda(p): '{:.0f}'.format(p * total / 100), shadow=False, startangle=90)
 
     plt.axis('equal')
-    # plt.suptitle('Best visualization to identify most uncertain object')
-    plt.savefig("../plots/"+t+".pdf")
+    plt.suptitle(value)
+    plt.savefig("../plots/"+key+".pdf")
 
+
+    plt.clf()
+
+
+# age box plot:
+ages = []
+for r in responses:
+    ages.append(int(r["age"]))
+
+plt.boxplot(ages)
+plt.suptitle("Age distribution")
+plt.savefig("../plots/age.pdf")
 
 plt.clf()

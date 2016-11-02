@@ -128,25 +128,7 @@ def getLeastUncertain(session, page):
 
 
 def getClosest(session, page, clickpoint):
-
-    print session
-    print page
-    print clickpoint
-
-    data = openGeoJSON(session, page)
-
-    # initialize the shortest distance with a very high value:
-    shortest = 100000000.0
-    u = 0
-
-    for feature in data['features']:
-        d = getDist(feature['geometry']['coordinates'], clickpoint)
-        if d < shortest:
-            print "Found a shorter distance: " + str(d) + "; Point: " + str(feature['geometry']['coordinates'])
-            shortest = d
-            u = feature['properties']['accuracy']
-    print
-    return u
+    return getIDW(session, page, clickpoint, 1)
 
 
 # gets an inverse distance weighted average uncertainty at clickpoint using its n nearest neighbors
@@ -159,17 +141,11 @@ def getIDW(session, page, clickpoint, n):
     # put all the distances in one array, and the accuracy values into another one:
     for feature in data['features']:
 
-        print feature['geometry']['coordinates']
-        print feature['properties']['accuracy']
-
         d = getDist(feature['geometry']['coordinates'], clickpoint)
         u = feature['properties']['accuracy']
 
         distances = np.append(distances, [d])
         uncertainties = np.append(uncertainties, [u])
-
-    print distances
-    print uncertainties
 
     # get the indexes of the n smallest values:
     indexes = distances.argsort()[:n]
@@ -179,18 +155,15 @@ def getIDW(session, page, clickpoint, n):
 
     totaldist = np.sum(shortestN)
     weights = np.divide(shortestN, totaldist)
-    print weights
     weighted = np.multiply(uncertainties[indexes], weights)
-    print weighted
     iwd = np.sum(weighted)
-    print iwd
+
+    return iwd
 
 
 
 responses = []
 os.chdir(os.path.expanduser("~")+"/Dropbox/Code/UncertD3/evaluation/data/")
-
-getIDW(1478090229309, 1, [ -73.9591, 40.8023], 1)
 
 sys.exit();
 

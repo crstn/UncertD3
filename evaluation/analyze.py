@@ -1,5 +1,6 @@
-import urllib, os, csv, matplotlib, json, geopy, pprint
+import urllib, os, csv, matplotlib, json, geopy, pprint, sys
 import matplotlib.pyplot as plt
+import numpy as np
 from geopy.distance import vincenty
 
 # some helper functions:
@@ -102,7 +103,7 @@ def getClicks():
 
 
 def openGeoJSON(session, page):
-    with open(str(r["session"])+"/"+str(page)+".json") as f:
+    with open(str(session)+"/"+str(page)+".json") as f:
         data = json.load(f)
         # pprint.pprint(data)
         return data
@@ -148,8 +149,50 @@ def getClosest(session, page, clickpoint):
     return u
 
 
+# gets an inverse distance weighted average uncertainty at clickpoint using its n nearest neighbors
+def getIDW(session, page, clickpoint, n):
+    data = openGeoJSON(session, page)
+
+    distances = np.array([])
+    uncertainties = np.array([])
+
+    # put all the distances in one array, and the accuracy values into another one:
+    for feature in data['features']:
+
+        print feature['geometry']['coordinates']
+        print feature['properties']['accuracy']
+
+        d = getDist(feature['geometry']['coordinates'], clickpoint)
+        u = feature['properties']['accuracy']
+
+        distances = np.append(distances, [d])
+        uncertainties = np.append(uncertainties, [u])
+
+    print distances
+    print uncertainties
+
+    # get the indexes of the n smallest values:
+    indexes = distances.argsort()[:n]
+
+    # get the distances at those indexes and get the total:
+    shortestN = distances[indexes]
+
+    totaldist = np.sum(shortestN)
+    weights = np.divide(shortestN, totaldist)
+    print weights
+    weighted = np.multiply(uncertainties[indexes], weights)
+    print weighted
+    iwd = np.sum(weighted)
+    print iwd
+
+
+
 responses = []
 os.chdir(os.path.expanduser("~")+"/Dropbox/Code/UncertD3/evaluation/data/")
+
+getIDW(1478090229309, 1, [ -73.9591, 40.8023], 1)
+
+sys.exit();
 
 # download the CSV with the up-to-date interview responses to have a backup
 response = urllib.urlopen("http://carsten.io/uncertainty/experiments/questionnaires.csv")

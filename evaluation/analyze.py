@@ -1,6 +1,5 @@
-import urllib, os, csv, matplotlib, json
+import urllib, os, csv, matplotlib, json, geopy, pprint
 import matplotlib.pyplot as plt
-from shapely.geometry import Point
 
 # some helper functions:
 
@@ -43,8 +42,9 @@ def sortCounts(labels, counts):
 
     return newlabels, newcounts
 
-
-def getresponsetimes(responses):
+# The limit will cap the response time at x milliseconds in order not to screw up the box plots later.
+# Default is 80 seconds.
+def getresponsetimes(responses, limit = 80000):
 
     responsetimes = []
 
@@ -57,6 +57,8 @@ def getresponsetimes(responses):
                 parts = l.split(', ')
                 page = int(parts[0])
                 time = int(parts[1])
+                if time > limit:
+                    time = limit
 
                 # our pages start at 1, but the list indices at zero, so always subtract 1:
                 if len(responsetimes) > page-1:
@@ -65,6 +67,34 @@ def getresponsetimes(responses):
                     responsetimes.append([time])
 
     return responsetimes
+
+
+# Loads the log.txt files into one big dictionary
+def getClicks():
+    clicks = {}
+    for r in responses:
+        s = str(r["session"])
+        logfile = s+'/log.txt'
+
+        with open(logfile) as f:
+            lines = f.readlines()
+
+            for l in lines:
+                parts = l.split(', ')
+                # init the sub-dictionary if we're at the first page:
+                if parts[0] == '1':
+                    clicks[s] = {}
+
+                # init the sub-sub dict for the current page:
+                clicks[s][parts[0]] = {}
+
+                # and fill it
+                clicks[s][parts[0]]["time"] = int(parts[1])
+                clicks[s][parts[0]]["lon"] = float(parts[2])
+                clicks[s][parts[0]]["lat"] = float(parts[3])
+
+    # pprint.pprint(clicks)
+    return clicks
 
 
 
@@ -92,6 +122,8 @@ with open("questionnaires.csv", 'rb') as csvfile:
     for r in rs:
         responses.append(r)
 
+print "n = " + str(len(responses))
+
 # next, go through all the sessions and check if we already have a copy of the data for that session;
 # if not, download the data:
 for r in responses:
@@ -107,7 +139,7 @@ for r in responses:
 # on to the actual analysis:
 # first, some pie charts
 matplotlib.style.use("fivethirtyeight")
-ftecolors = ['#008fd5', '#fc4f30', '#e5ae38', '#6d904f', '#8b8b8b', '#810f7c']
+ftecolors = ['#fc4f30', '#008fd5', '#e5ae38', '#6d904f', '#8b8b8b', '#810f7c']
 
 # gender:
 
@@ -160,18 +192,25 @@ plt.clf()
 
 
 # make a box plot of the response times:
-plt.boxplot(getresponsetimes(responses), 0, '')
+# plt.boxplot(getresponsetimes(responses), 0, '')
+plt.boxplot(getresponsetimes(responses))
 plt.suptitle("Response times")
 plt.savefig("../plots/responsetimes.pdf")
 
 plt.clf()
 
-# let's take a look at the GeoJSON files and click locations:
+# Let's take a look at the GeoJSON files and click locations. First, load the click logs:
+clicks = getClicks();
+
 # iterate through all individual participant responses:
-for r in responses:
-    for i in range(1, 12):
-        with open(str(r["session"])+"/"+str(i)+".json") as f:
-            data = json.load(f)
+# for r in responses:
+#     for i in range(1, 12):
+#         try:
+#             with open(str(r["session"])+"/"+str(i)+".json") as f:
+#                 data = json.load(f)
+#         except Exception as e:
+#             print str(r["session"])+"/"+str(i)+".json"
+#             print e
 
         # for feature in data['features']:
         #     print feature['properties']['accuracy']

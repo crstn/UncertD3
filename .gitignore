@@ -4,3 +4,5 @@ Rubberband.mov
 evaluation/data/*
 
 *.pdf
+
+evaluation/plots/heatmap.png

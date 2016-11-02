@@ -1,7 +1,11 @@
 import urllib, os, csv, matplotlib, json, geopy, pprint
 import matplotlib.pyplot as plt
+from geopy.distance import vincenty
 
 # some helper functions:
+def getDist(pointA, pointB):
+    # geojson uses x/y, geopy uses lat/lon, so we have to flip the coordinates:
+    return vincenty((pointA[1], pointA[0]), (pointB[1], pointB[0])).meters
 
 # counts the occurances of a certain key in a dictionary (dic).
 def gatherPieData(dic, key):
@@ -97,6 +101,51 @@ def getClicks():
     return clicks
 
 
+def openGeoJSON(session, page):
+    with open(str(r["session"])+"/"+str(page)+".json") as f:
+        data = json.load(f)
+        # pprint.pprint(data)
+        return data
+
+
+def getCoordsByValue(session, page, value):
+    data = openGeoJSON(session, page)
+    for feature in data['features']:
+        # Careful here: high accuracy values actually mean high uncertainty. Don't ask me why I did it that way...
+        if feature['properties']['accuracy'] == value:
+            return feature['geometry']['coordinates']
+
+    # return an empty array if no point with accuracy of 'value' is found, which should never happen
+    print "No point found... this shouldn't happen!"
+    return []
+
+def getMostUncertain(session, page):
+    return getCoordsByValue(session, page, 7)
+
+def getLeastUncertain(session, page):
+    return getCoordsByValue(session, page, 1)
+
+
+def getClosest(session, page, clickpoint):
+
+    print session
+    print page
+    print clickpoint
+
+    data = openGeoJSON(session, page)
+
+    # initialize the shortest distance with a very high value:
+    shortest = 100000000.0
+    u = 0
+
+    for feature in data['features']:
+        d = getDist(feature['geometry']['coordinates'], clickpoint)
+        if d < shortest:
+            print "Found a shorter distance: " + str(d) + "; Point: " + str(feature['geometry']['coordinates'])
+            shortest = d
+            u = feature['properties']['accuracy']
+    print
+    return u
 
 
 responses = []
@@ -201,6 +250,63 @@ plt.clf()
 
 # Let's take a look at the GeoJSON files and click locations. First, load the click logs:
 clicks = getClicks();
+
+distances = []
+clostests = []
+
+# go through all sessions:
+for session in clicks:
+    s = clicks[session]
+    for page in s:
+        # the uneven pages ask for the MOST uncertain object,
+        # the even pages for the LEAST uncertain object
+
+        clickpoint = [s[page]['lon'], s[page]['lat']]
+        page = int(page)
+
+        if page % 2 == 0: # even
+            # look for the least uncertain object in the corresponding geojson
+            maxP = getLeastUncertain(session, page)
+        else:  # not even
+            # look for the most uncertain object in the corresponding geojson
+            maxP = getMostUncertain(session, page)
+
+        # and calculate the distance to the click
+        d = getDist(maxP, clickpoint)
+
+        # collect all distances in a list of lists by page
+        # our pages start at 1, but the list indices at zero, so always subtract 1:
+        if len(distances) > page-1:
+            distances[page-1].append(d)
+        else:
+            distances.append([d])
+
+        # collect all uncertainty values in a list of lists by page
+        # look for the closest point to the click and check its uncertainty
+        c = getClosest(session, page, clickpoint)
+        if len(clostests) > page - 1:
+            clostests[page-1].append(c)
+        else:
+            clostests.append([c])
+
+
+
+# make a box plot of the distances:
+plt.boxplot(distances)
+plt.suptitle("Distances")
+plt.savefig("../plots/distances.pdf")
+
+plt.clf()
+
+
+# and one of the uncertainty values of the closest points:
+plt.boxplot(clostests)
+plt.suptitle("Uncertainty of closest point")
+plt.savefig("../plots/clostest.pdf")
+
+plt.clf()
+
+
 
 # iterate through all individual participant responses:
 # for r in responses:

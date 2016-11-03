@@ -310,6 +310,11 @@ plt.savefig("../plots/age.pdf")
 plt.clf()
 
 
+#print same stats
+print "Mean age: "+str(np.mean(ages))
+print "Std dev.: "+str(np.std(ages))
+
+
 # make a box plot of the response times:
 # plt.boxplot(getresponsetimes(responses), 0, '')
 plt.boxplot(getresponsetimes(responses))

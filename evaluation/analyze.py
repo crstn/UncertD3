@@ -10,12 +10,136 @@ import matplotlib.pyplot as plt
 import numpy as np
 from geopy.distance import vincenty
 
+# turn downloading of new data from server on or off:
+download = False
+
 # some constants:
-circleRadius = 300
+circleRadius = 100
 idwNeighbors = 5
+# these are used to correct for the shift in the click data
+# (error introduced during reverse transformation of click locations)
+shiftlat = -0.0018
+shiftlon = 0.0025
+
+
+
 
 # some helper functions:
 
+# loads all test data into one big dictionary:
+def loadData():
+    responses = []
+    if download:
+        # download the CSV with the up-to-date interview responses to have a backup
+        response = urllib.urlopen(
+            "http://carsten.io/uncertainty/experiments/questionnaires.csv")
+
+        # download csv to string
+        text = response.read()
+
+        # fix formatting of csv:
+        text = text.replace(", ", ",").replace(",\n", "\n")
+
+        # save to local file as backup:
+        with open("questionnaires.csv", "w") as text_file:
+            text_file.write(text)
+
+
+
+
+    # then read in the local csv file as dict
+    with open("questionnaires.csv", 'rb') as csvfile:
+        # r = csv.reader(csvfile, delimiter=',', quotechar='|')
+        rs = csv.DictReader(csvfile, delimiter=',')
+        for r in rs:
+            responses.append(r)
+
+
+    # next, go through all the sessions and check if we already have a copy of the data for that session;
+    # if not, download the data:
+    if download:
+        for r in responses:
+            if not os.path.exists(str(r["session"])):
+                print "Downloading new data for session " + str(r["session"]) + "..."
+                os.makedirs(str(r["session"]))
+                for i in range(1, 12):
+                    path = str(r["session"]) + "/" + str(i) + ".json"
+                    urllib.urlretrieve(
+                        "http://carsten.io/uncertainty/experiments/" + path, path)
+                    path = str(r["session"]) + "/log.txt"
+                    urllib.urlretrieve(
+                        "http://carsten.io/uncertainty/experiments/" + path, path)
+
+
+
+    # now transform the dict so that the session becomes the key:
+    temp = dict()
+
+    for r in responses:
+        temp[r["session"]] = r
+
+    responses = temp
+    temp = None
+
+
+    # next, add the log file data to the dict:
+    for session in responses:
+        # add the log file values to the dict:
+        responses[session]['pages'] = dict()
+
+        logfile = session + '/log.txt'
+
+        with open(logfile) as f:
+            lines = f.readlines()
+
+            for l in lines:
+                parts = l.split(', ')
+
+                # name the parts:
+                page = parts[0]
+                time = int(parts[1])
+                lon = float(parts[2]) + shiftlon # shift correction!
+                lat = float(parts[3]) + shiftlat # shift correction!
+
+                responses[session]['pages'][page] = dict()
+                responses[session]['pages'][page]['time'] = time
+                responses[session]['pages'][page]['clicklat'] = lat
+                responses[session]['pages'][page]['clicklon'] = lon
+
+                # and attach the geojson for this page:
+                with open(session+'/'+page+'.json') as geojson_file:
+                    geojson = json.load(geojson_file)
+
+                responses[session]['pages'][page]['geojson'] = geojson
+
+
+    # check completeness
+
+    print "n = " + str(len(responses))
+
+    for session in responses:
+
+        pages = responses[session]['pages']
+
+        for i in range(1,12):
+            if str(i) not in pages:
+                print session + " lacks page " + str(i)
+
+            keys = ['time', 'clicklat', 'clicklon', 'geojson']
+
+            for page in pages:
+                p = pages[page]
+                for key in keys:
+                    if key not in p:
+                        print session + ", page " + str(i) + " lacks " + key
+
+
+    return responses
+
+
+
+
+# calculates the vincenty distance between A and B with x,y coordinates
 def getDist(pointA, pointB):
     # geojson uses x/y, geopy uses lat/lon, so we have to flip the coordinates:
     return vincenty((pointA[1], pointA[0]), (pointB[1], pointB[0])).meters
@@ -25,19 +149,17 @@ def getDist(pointA, pointB):
 def gatherPieData(dic, key):
     labels = []
     counts = []
-    for row in dic:
-        if row[key] in labels:
-            i = labels.index(row[key])
+    for session in dic:
+        if dic[session][key] in labels:
+            i = labels.index(dic[session][key])
             counts[i] = counts[i] + 1
         else:
-            labels.append(row[key])
+            labels.append(dic[session][key])
             counts.append(1)
 
     return sortCounts(labels, counts)
 
 # puts the labels and corresponding counts in alphabetic order
-
-
 def sortCounts(labels, counts):
     newlabels = []
     newcounts = []
@@ -64,84 +186,79 @@ def sortCounts(labels, counts):
 
 # The limit will cap the response time at x milliseconds in order not to screw up the box plots later.
 # Default is 80 seconds.
-
-
 def getresponsetimes(responses, limit=80000):
 
     responsetimes = []
 
     for r in responses:
-        logfile = str(r["session"]) + '/log.txt'
-        with open(logfile) as f:
-            lines = f.readlines()
+        for page in range(1,12):
 
-            for l in lines:
-                parts = l.split(', ')
-                page = int(parts[0])
-                time = int(parts[1])
-                if time > limit:
-                    time = limit
+            time = responses[r]['pages'][str(page)]['time']
 
-                # our pages start at 1, but the list indices at zero, so always
-                # subtract 1:
-                if len(responsetimes) > page - 1:
-                    responsetimes[page - 1].append(time)
-                else:
-                    responsetimes.append([time])
+            if time > limit:
+                time = limit
+
+            # our pages start at 1, but the list indices at zero, so always
+            # subtract 1:
+            if len(responsetimes) > page - 1:
+                responsetimes[page - 1].append(time)
+            else:
+                responsetimes.append([time])
 
     return responsetimes
 
 
 # Loads the log.txt files into one big dictionary
-def getClicks():
-    clicks = {}
-    id = 0
-
-    # We'll also write all of the point to a csv file
-    # (use it to quickly create a heat map in Carto)
-    csv = "allclicks.csv"
-    with open(csv, "w") as text_file:
-        text_file.write("id,session,page,lon,lat\n")
-
-    for r in responses:
-        s = str(r["session"])
-        logfile = s + '/log.txt'
-
-        with open(logfile) as f:
-            lines = f.readlines()
-
-            for l in lines:
-                parts = l.split(', ')
-                # init the sub-dictionary if we're at the first page:
-                if parts[0] == '1':
-                    clicks[s] = {}
-
-                # init the sub-sub dict for the current page:
-                clicks[s][parts[0]] = {}
-
-                # and fill it
-                clicks[s][parts[0]]["time"] = int(parts[1])
-                clicks[s][parts[0]]["lon"] = float(parts[2])
-                clicks[s][parts[0]]["lat"] = float(parts[3])
-
-                # and write the same stuff to the csv
-                with open(csv, "a") as text_file:
-                    text_file.write(str(id)+","+s+","+parts[0]+","+parts[2]+","+parts[3])
-
-                id = id+1
-
-    return clicks
-
-
-def openGeoJSON(session, page):
-    with open(str(session) + "/" + str(page) + ".json") as f:
-        data = json.load(f)
-        # pprint.pprint(data)
-        return data
+# def getClicks():
+#     clicks = {}
+#     id = 0
+#
+#     # We'll also write all of the points to a csv file
+#     # (use it to quickly create a heat map in Carto)
+#     csv = "allclicks.csv"
+#     with open(csv, "w") as text_file:
+#         # add csv header
+#         text_file.write("id,session,page,lon,lat,time\n")
+#
+#     for r in responses:
+#         s = str(r["session"])
+#         logfile = s + '/log.txt'
+#
+#         with open(logfile) as f:
+#             lines = f.readlines()
+#
+#             for l in lines:
+#                 parts = l.split(', ')
+#                 # init the sub-dictionary if we're at the first page:
+#                 if parts[0] == '1':
+#                     clicks[s] = {}
+#
+#                 # init the sub-sub dict for the current page:
+#                 clicks[s][parts[0]] = {}
+#
+#                 # and fill it
+#                 lon = float(parts[2]) + shiftlon
+#                 lat = float(parts[3]) + shiftlat
+#
+#                 clicks[s][parts[0]]["time"] = int(parts[1])
+#                 clicks[s][parts[0]]["lon"] = lon
+#                 clicks[s][parts[0]]["lat"] = lat
+#
+#                 # and write the same stuff to the csv
+#                 with open(csv, "a") as text_file:
+#                     text_file.write(str(id)+","+s+","+parts[0]+","+str(lon)+","+str(lat)+","+parts[1]+"\n")
+#
+#                 id = id+1
+#
+#     return clicks
 
 
-def getCoordsByValue(session, page, value):
-    data = openGeoJSON(session, page)
+def openGeoJSON(responses, session, page):
+    return responses[session]['pages'][str(page)]['geojson']
+
+
+def getCoordsByValue(responses, session, page, value):
+    data = openGeoJSON(responses, session, page)
     for feature in data['features']:
         # Careful here: high accuracy values actually mean high uncertainty.
         # Don't ask me why I did it that way...
@@ -154,12 +271,12 @@ def getCoordsByValue(session, page, value):
     return []
 
 
-def getMostUncertain(session, page):
-    return getCoordsByValue(session, page, 7)
+def getMostUncertain(responses, session, page):
+    return getCoordsByValue(responses, session, page, 7)
 
 
-def getLeastUncertain(session, page):
-    return getCoordsByValue(session, page, 1)
+def getLeastUncertain(responses, session, page):
+    return getCoordsByValue(responses, session, page, 1)
 
 
 def getClosest(session, page, clickpoint):
@@ -167,10 +284,8 @@ def getClosest(session, page, clickpoint):
 
 # dist defaults to circleRadius set at the top. 200m is roughly the real-world radius of our
 # circle in the test
-
-
 def getNumOfPointsWithinDistance(session, page, clickpoint, maxDist=circleRadius):
-    data = openGeoJSON(session, page)
+    data = openGeoJSON(responses, session, page)
     distances = np.array([])
     for feature in data['features']:
         d = getDist(feature['geometry']['coordinates'], clickpoint)
@@ -182,7 +297,7 @@ def getNumOfPointsWithinDistance(session, page, clickpoint, maxDist=circleRadius
 # gets an inverse distance weighted average uncertainty at clickpoint
 # using its n nearest neighbors
 def getIDW(session, page, clickpoint, n):
-    data = openGeoJSON(session, page)
+    data = openGeoJSON(responses, session, page)
 
     distances = np.array([])
     uncertainties = np.array([])
@@ -210,48 +325,19 @@ def getIDW(session, page, clickpoint, n):
 
     return iwd
 
+
+
+
+
+# ---- ---- ---- ---- ---- ---- ----
 # let's start the actual work...
+# ---- ---- ---- ---- ---- ---- ----
 
-responses = []
+# load the data
 os.chdir(os.path.expanduser("~") + "/Dropbox/Code/UncertD3/evaluation/data/")
+responses = loadData()
 
 
-# download the CSV with the up-to-date interview responses to have a backup
-response = urllib.urlopen(
-    "http://carsten.io/uncertainty/experiments/questionnaires.csv")
-
-# download csv to string
-text = response.read()
-
-# fix formatting of csv:
-text = text.replace(", ", ",").replace(",\n", "\n")
-
-# save to local file as backup:
-with open("questionnaires.csv", "w") as text_file:
-    text_file.write(text)
-
-# then read in this local csv file as dict
-with open("questionnaires.csv", 'rb') as csvfile:
-    # r = csv.reader(csvfile, delimiter=',', quotechar='|')
-    rs = csv.DictReader(csvfile, delimiter=',')
-    for r in rs:
-        responses.append(r)
-
-print "n = " + str(len(responses))
-
-# next, go through all the sessions and check if we already have a copy of the data for that session;
-# if not, download the data:
-for r in responses:
-    if not os.path.exists(str(r["session"])):
-        print "Downloading new data for session " + str(r["session"]) + "..."
-        os.makedirs(str(r["session"]))
-        for i in range(1, 12):
-            path = str(r["session"]) + "/" + str(i) + ".json"
-            urllib.urlretrieve(
-                "http://carsten.io/uncertainty/experiments/" + path, path)
-            path = str(r["session"]) + "/log.txt"
-            urllib.urlretrieve(
-                "http://carsten.io/uncertainty/experiments/" + path, path)
 
 # on to the actual analysis:
 # first, some pie charts
@@ -300,8 +386,8 @@ for key, value in d.iteritems():
 
 # age box plot:
 ages = []
-for r in responses:
-    ages.append(int(r["age"]))
+for session in responses:
+    ages.append(int(responses[session]["age"]))
 
 plt.boxplot(ages)
 plt.suptitle("Age distribution")
@@ -310,14 +396,15 @@ plt.savefig("../plots/age.pdf")
 plt.clf()
 
 
-#print same stats
+#print some stats
 print "Mean age: "+str(np.mean(ages))
 print "Std dev.: "+str(np.std(ages))
 
 
 # make a box plot of the response times:
 # plt.boxplot(getresponsetimes(responses), 0, '')
-plt.boxplot(getresponsetimes(responses))
+rspTimes = getresponsetimes(responses)
+plt.boxplot(rspTimes)
 plt.suptitle("Response times")
 plt.savefig("../plots/responsetimes.pdf")
 
@@ -325,7 +412,6 @@ plt.clf()
 
 # Let's take a look at the GeoJSON files and click locations. First, load
 # the click logs:
-clicks = getClicks()
 
 distances = []
 clostests = []
@@ -335,21 +421,22 @@ idwsWithinDistance = []
 lostclicks = 0
 
 # go through all sessions:
-for session in clicks:
-    s = clicks[session]
-    for page in s:
+for session in responses:
+    s = responses[session]
+    for p in range(1,12):
+        page = str(p)
         # the uneven pages ask for the MOST uncertain object,
         # the even pages for the LEAST uncertain object
 
-        clickpoint = [s[page]['lon'], s[page]['lat']]
+        clickpoint = [s['pages'][page]['clicklon'], s['pages'][page]['clicklat']]
         page = int(page)
 
         if page % 2 == 0:  # even
             # look for the least uncertain object in the corresponding geojson
-            maxP = getLeastUncertain(session, page)
+            maxP = getLeastUncertain(responses, session, page)
         else:  # not even
             # look for the most uncertain object in the corresponding geojson
-            maxP = getMostUncertain(session, page)
+            maxP = getMostUncertain(responses, session, page)
 
         # and calculate the distance to the click
         d = getDist(maxP, clickpoint)
@@ -388,7 +475,8 @@ for session in clicks:
         else:
             lostclicks = lostclicks + 1
 
-print str(lostclicks) + " out of " + str(len(responses)*11) + " outside of circle (" + str(lostclicks/len(responses)*10.0) + "%)."
+print str(lostclicks) + " out of " + str(len(responses)*11) + " outside of " + str(circleRadius) + "m circle (" + str(lostclicks/len(responses)*10.0) + "%)."
+
 
 # make a box plot of the distances:
 plt.boxplot(distances)
@@ -421,6 +509,8 @@ plt.savefig("../plots/idw-within-circle.pdf")
 plt.clf()
 
 
+
+
 # pie plots of the answers to the rest of the questionnaire:
 
 plts = ["size", "sizeinter", "transparency", "transparencyinter", "movement", "movementinter", "combined", "job"]
@@ -436,5 +526,25 @@ for i in range(len(plts)):
     plt.axis('equal')
     plt.suptitle(questions[i])
     plt.savefig("../plots/"+plts[i]+".pdf")
+
+    plt.clf()
+
+
+
+# simple scatter plot of response time vs. distance to correct answer:
+
+for page in range(len(distances)):
+
+    # these have to be np arrays, see http://stackoverflow.com/questions/26690480/matplotlib-valueerror-x-and-y-must-have-same-first-dimension
+    d = np.array(distances[page])
+    t = np.array(rspTimes[page])
+
+    m, b = np.polyfit(t, d, 1)
+
+    plt.plot(t, d, ".", label="Page "+str(page))
+    plt.plot(t, m*d + b, "-", linewidth = 1.0)
+
+    plt.suptitle("Distance to correct answer vs. response time")
+    plt.savefig("../plots/dist_vs_time_"+str(page+1)+".pdf")
 
     plt.clf()

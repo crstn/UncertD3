@@ -1,12 +1,13 @@
 import urllib
 import os
 import csv
-import matplotlib
 import json
 import geopy
 import pprint
 import sys
+import matplotlib
 import matplotlib.pyplot as plt
+import scipy.stats as stat
 import numpy as np
 from geopy.distance import vincenty
 
@@ -184,79 +185,33 @@ def sortCounts(labels, counts):
 
     return newlabels, newcounts
 
-# The limit will cap the response time at x milliseconds in order not to screw up the box plots later.
-# Default is 80 seconds.
-def getresponsetimes(responses, limit=80000):
-
-    responsetimes = []
-
-    for r in responses:
-        for page in range(1,12):
-
-            time = responses[r]['pages'][str(page)]['time']
-
-            if time > limit:
-                time = limit
-
-            # our pages start at 1, but the list indices at zero, so always
-            # subtract 1:
-            if len(responsetimes) > page - 1:
-                responsetimes[page - 1].append(time)
-            else:
-                responsetimes.append([time])
-
-    return responsetimes
 
 
-# Loads the log.txt files into one big dictionary
-# def getClicks():
-#     clicks = {}
-#     id = 0
-#
-#     # We'll also write all of the points to a csv file
-#     # (use it to quickly create a heat map in Carto)
-#     csv = "allclicks.csv"
-#     with open(csv, "w") as text_file:
-#         # add csv header
-#         text_file.write("id,session,page,lon,lat,time\n")
-#
-#     for r in responses:
-#         s = str(r["session"])
-#         logfile = s + '/log.txt'
-#
-#         with open(logfile) as f:
-#             lines = f.readlines()
-#
-#             for l in lines:
-#                 parts = l.split(', ')
-#                 # init the sub-dictionary if we're at the first page:
-#                 if parts[0] == '1':
-#                     clicks[s] = {}
-#
-#                 # init the sub-sub dict for the current page:
-#                 clicks[s][parts[0]] = {}
-#
-#                 # and fill it
-#                 lon = float(parts[2]) + shiftlon
-#                 lat = float(parts[3]) + shiftlat
-#
-#                 clicks[s][parts[0]]["time"] = int(parts[1])
-#                 clicks[s][parts[0]]["lon"] = lon
-#                 clicks[s][parts[0]]["lat"] = lat
-#
-#                 # and write the same stuff to the csv
-#                 with open(csv, "a") as text_file:
-#                     text_file.write(str(id)+","+s+","+parts[0]+","+str(lon)+","+str(lat)+","+parts[1]+"\n")
-#
-#                 id = id+1
-#
-#     return clicks
+# sorts A and B in ascending order of A
+def sortBoth(a, b):
+    newa = []
+    newb = []
+
+    # repeat until the input list is empty:
+    while a:
+        i = a.index(min(a))
+        newa.append(a[i])
+        newb.append(b[i])
+        del a[i]
+        del b[i]
+
+    return newa, newb
+
+
+
 
 
 def openGeoJSON(responses, session, page):
     return responses[session]['pages'][str(page)]['geojson']
 
-
+# Returns the coordinates of the first point with the given
+# accurracy value. Only really useful for values 1 and 7,
+# which only appear once in the data.
 def getCoordsByValue(responses, session, page, value):
     data = openGeoJSON(responses, session, page)
     for feature in data['features']:
@@ -282,8 +237,8 @@ def getLeastUncertain(responses, session, page):
 def getClosest(session, page, clickpoint):
     return getIDW(session, page, clickpoint, 1)
 
-# dist defaults to circleRadius set at the top. 200m is roughly the real-world radius of our
-# circle in the test
+# dist defaults to circleRadius set at the top.
+# 200m is roughly the real-world diameter of our circle in the test
 def getNumOfPointsWithinDistance(session, page, clickpoint, maxDist=circleRadius):
     data = openGeoJSON(responses, session, page)
     distances = np.array([])
@@ -372,6 +327,10 @@ colors = ['#008fd5', '#33bbff', '#005f8f', '#fc4322', '#B51D03', '#FB310E',
 for key, value in d.iteritems():
 
     labels, counts = gatherPieData(responses, key)
+
+    for i in range(len(labels)):
+        labels[i] = labels[i].replace("Please select...", "undecided")
+
     total = sum(counts)
 
     plt.pie(counts, labels=labels, colors=colors, autopct=lambda(
@@ -399,24 +358,25 @@ plt.clf()
 #print some stats
 print "Mean age: "+str(np.mean(ages))
 print "Std dev.: "+str(np.std(ages))
+print "Min age: "+str(np.min(ages))
+print "Max age: "+str(np.max(ages))
 
-
-# make a box plot of the response times:
-# plt.boxplot(getresponsetimes(responses), 0, '')
-rspTimes = getresponsetimes(responses)
-plt.boxplot(rspTimes)
-plt.suptitle("Response times")
-plt.savefig("../plots/responsetimes.pdf")
-
-plt.clf()
 
 # Let's take a look at the GeoJSON files and click locations. First, load
 # the click logs:
 
-distances = []
-clostests = []
-idws = []
-idwsWithinDistance = []
+distances = [[],[],[],[],[],[],[],[],[],[],[]]
+distances_no = [[],[],[],[],[],[],[],[],[],[],[]] # collect just the data that are no outliers
+clostests = [[],[],[],[],[],[],[],[],[],[],[]]
+clostests_no = [[],[],[],[],[],[],[],[],[],[],[]] # collect just the data that are no outliers
+idws = [[],[],[],[],[],[],[],[],[],[],[]]
+idws_no = [[],[],[],[],[],[],[],[],[],[],[]] # collect just the data that are no outliers
+idwsWithinDistance = [[],[],[],[],[],[],[],[],[],[],[]]
+rspTimes = [[],[],[],[],[],[],[],[],[],[],[]]
+rspTimes_no = [[],[],[],[],[],[],[],[],[],[],[]]
+
+
+
 
 lostclicks = 0
 
@@ -444,44 +404,73 @@ for session in responses:
         # collect all distances in a list of lists by page
         # our pages start at 1, but the list indices at zero, so always
         # subtract 1:
-        if len(distances) > page - 1:
-            distances[page - 1].append(d)
-        else:
-            distances.append([d])
+        distances[page - 1].append(d)
+        if d < circleRadius:
+            distances_no[page - 1].append(d)
+
+        # add the response time:
+
+        time = s['pages'][str(page)]['time']
+
+        # set the max response time to 60 seconds, otherwise the box plots become useless:
+        if time > 60000:
+            time = 60000
+
+        # change from milliseconds to seconds:
+        time = time/1000.0
+
+        rspTimes[page - 1].append(time)
+        if d < circleRadius:
+            rspTimes_no[page - 1].append(time)
 
         # collect all uncertainty values in a list of lists by page
         # look for the closest point to the click and check its uncertainty
         c = getClosest(session, page, clickpoint)
-        if len(clostests) > page - 1:
-            clostests[page - 1].append(c)
-        else:
-            clostests.append([c])
+        clostests[page - 1].append(c)
+        if d < circleRadius:
+            clostests_no[page - 1].append(c)
 
         # collect all IDW values in a list of lists by page
         idw = getIDW(session, page, clickpoint, idwNeighbors)
-        if len(idws) > page - 1:
-            idws[page - 1].append(idw)
-        else:
-            idws.append([idw])
+        idws[page - 1].append(idw)
+        if d < circleRadius:
+            idws_no[page - 1].append(idw)
 
         # collect all IDW values for clicks that are within 200m of our track
         n = getNumOfPointsWithinDistance(session, page, clickpoint)
         if n > 0:
             idw = getIDW(session, page, clickpoint, n)
-            if len(idwsWithinDistance) > page - 1:
-                idwsWithinDistance[page - 1].append(idw)
-            else:
-                idwsWithinDistance.append([idw])
+            idwsWithinDistance[page - 1].append(idw)
         else:
             lostclicks = lostclicks + 1
 
 print str(lostclicks) + " out of " + str(len(responses)*11) + " outside of " + str(circleRadius) + "m circle (" + str(lostclicks/len(responses)*10.0) + "%)."
+
+# box plots of the response times
+plt.boxplot(rspTimes)
+plt.suptitle("Response times per test page in seconds")
+plt.savefig("../plots/responsetimes.pdf")
+
+plt.clf()
+
+plt.boxplot(rspTimes_no)
+plt.suptitle("Response times per test page in seconds (no outliers)")
+plt.savefig("../plots/responsetimes_no.pdf")
+
+plt.clf()
 
 
 # make a box plot of the distances:
 plt.boxplot(distances)
 plt.suptitle("Distances")
 plt.savefig("../plots/distances.pdf")
+
+plt.clf()
+
+# the same without outliers:
+plt.boxplot(distances_no)
+plt.suptitle("Distances (no outliers)")
+plt.savefig("../plots/distances_no.pdf")
 
 plt.clf()
 
@@ -493,10 +482,25 @@ plt.savefig("../plots/clostest.pdf")
 
 plt.clf()
 
+# the same without outliers:
+plt.boxplot(clostests_no)
+plt.suptitle("Uncertainty of closest points (no outliers)")
+plt.savefig("../plots/clostest_no.pdf")
+
+plt.clf()
+
+
 # and another one, this time with IDW(5):
 plt.boxplot(idws)
 plt.suptitle("IDW uncertainty of 5 closest points")
 plt.savefig("../plots/idw5.pdf")
+
+plt.clf()
+
+# the same without outliers:
+plt.boxplot(idws_no)
+plt.suptitle("IDW uncertainty of 5 closest points  (no outliers)")
+plt.savefig("../plots/idw5_no.pdf")
 
 plt.clf()
 
@@ -535,9 +539,13 @@ for i in range(len(plts)):
 
 for page in range(len(distances)):
 
+    print "Pearson's r for page " + str(page) + ": " + str(stat.pearsonr(distances[page], rspTimes[page]))
+
+    d, t = sortBoth(distances[page], rspTimes[page])
+
     # these have to be np arrays, see http://stackoverflow.com/questions/26690480/matplotlib-valueerror-x-and-y-must-have-same-first-dimension
-    d = np.array(distances[page])
-    t = np.array(rspTimes[page])
+    d = np.array(d)
+    t = np.array(t)
 
     m, b = np.polyfit(t, d, 1)
 
@@ -546,5 +554,26 @@ for page in range(len(distances)):
 
     plt.suptitle("Distance to correct answer vs. response time")
     plt.savefig("../plots/dist_vs_time_"+str(page+1)+".pdf")
+
+    plt.clf()
+
+
+
+    # and repeat without outliers:
+
+    print "Pearson's r for page " + str(page) + ": " + str(stat.pearsonr(distances[page], rspTimes[page]))
+
+    d, t = sortBoth(distances_no[page], rspTimes_no[page])
+
+    d = np.array(d)
+    t = np.array(t)
+
+    m, b = np.polyfit(t, d, 1)
+
+    plt.plot(t, d, ".", label="Page "+str(page))
+    plt.plot(t, m*d + b, "-", linewidth = 1.0)
+
+    plt.suptitle("Distance to correct answer vs. response time")
+    plt.savefig("../plots/dist_vs_time_"+str(page+1)+"_no.pdf")
 
     plt.clf()

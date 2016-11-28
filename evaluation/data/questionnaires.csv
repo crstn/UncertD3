@@ -1,0 +1,165 @@
+worstleast,gender,age,movement,movementinter,q,job,session,combined,transparency,worstmost,size,bestleast,transparencyinter,sizeinter,bestmost
+11,male,36,position,correct,t,y,1477908454740,all,position,10,position,3,correct,correct,3
+8,female,33,position,correct,t,y,1477908853984,all,attribute,8,attribute,7,correct,correct,7
+6,male,30,position,correct,t,y,1477908880033,one,attribute,7,position,10,correct,correct,10
+4,male,38,position,correct,t,n,1477908833775,all,else,4,else,8,correct,wrong,11
+8,male,34,position,correct,t,y,1477908937936,all,position,8,position,3,correct,correct,3
+10,female,38,else,correct,t,y,1477910618018,one,else,11,position,6,wrong,correct,5
+11,male,34,else,correct,t,y,1477911455645,unsure,else,11,attribute,2,Please select...,Please select...,2
+10,male,33,position,correct,t,y,1477911584216,unsure,attribute,11,attribute,9,correct,wrong,8
+3,male,35,else,correct,t,y,1477911516706,unsure,else,9,attribute,Please select...,correct,Please select...,3
+10,male,34,position,correct,t,y,1477912958045,all,position,10,position,2,correct,correct,2
+7,male,45,position,correct,t,y,1477914393544,unsure,attribute,7,position,3,correct,correct,3
+5,female,39,position,correct,t,y,1477915805692,one,attribute,5,attribute,11,correct,Please select...,11
+8,female,41,position,correct,t,y,1477916764376,unsure,position,8,position,1,correct,correct,3
+10,male,36,position,correct,t,y,1477916943209,unsure,position,11,position,3,wrong,correct,1
+1,male,31,position,correct,t,y,1477917227403,all,position,1,position,11,wrong,correct,3
+8,male,28,position,correct,t,n,1477920343399,all,attribute,1,position,3,correct,correct,3
+4,male,33,position,correct,t,y,1477920986554,one,position,11,position,11,correct,correct,3
+5,male,54,position,correct,t,y,1477922300794,unsure,attribute,9,attribute,2,correct,correct,2
+10,male,26,position,correct,t,y,1477913216581,one,else,1,attribute,2,correct,correct,11
+10,male,48,position,correct,t,y,1477928954400,all,Please select...,11,position,2,Please select...,correct,3
+1,male,38,position,correct,t,y,1477929181037,unsure,else,2,else,7,correct,correct,11
+6,male,32,else,correct,t,y,1477929206081,unsure,attribute,6,attribute,3,correct,wrong,2
+11,male,30,else,correct,t,y,1477929202520,unsure,else,1,attribute,1,Please select...,Please select...,11
+1,male,36,position,correct,t,y,1477929390259,unsure,attribute,11,position,5,correct,correct,3
+11,male,32,position,correct,t,y,1477928931585,unsure,attribute,10,position,2,correct,correct,3
+9,female,28,else,Please select...,t,n,1477929752986,one,else,9,else,1,Please select...,correct,1
+8,male,30,position,correct,t,y,1477929958590,unsure,attribute,8,position,1,correct,correct,3
+1,female,68,position,correct,t,y,1477930804041,one,else,1,else,8,Please select...,wrong,10
+8,female,43,position,correct,t,y,1477931567444,one,position,9,position,2,correct,correct,3
+9,male,26,position,correct,t,y,1477932524504,all,position,8,position,3,correct,correct,3
+8,male,35,position,correct,t,y,1477933317458,one,position,8,position,3,correct,wrong,3
+9,male,44,attribute,correct,t,y,1477935881108,unsure,attribute,9,else,7,correct,wrong,3
+5,male,35,position,correct,t,y,1477937942436,one,position,5,attribute,3,correct,correct,4
+5,male,35,else,correct,t,y,1477941297566,one,attribute,4,else,3,correct,wrong,3
+9,male,26,position,correct,t,y,1477944615861,one,attribute,9,attribute,4,correct,correct,4
+4,male,36,else,correct,t,n,1477946840416,one,attribute,5,else,8,wrong,wrong,1
+4,female,30,position,correct,t,y,1477947567928,all,position,4,position,3,correct,correct,3
+11,male,47,attribute,correct,t,y,1477948729878,one,attribute,11,attribute,1,wrong,correct,1
+11,male,25,position,correct,t,y,1477949140415,unsure,position,10,position,2,correct,correct,3
+10,female,47,position,correct,t,y,1477950545641,one,position,8,else,2,correct,Please select...,3
+8,male,41,position,correct,t,y,1477950707974,all,position,8,position,7,correct,correct,3
+7,female,60,position,correct,t,n,1477952172406,all,position,1,attribute,1,correct,wrong,11
+11,male,30,position,correct,t,y,1477952148210,unsure,attribute,2,attribute,2,correct,correct,11
+10,male,38,position,correct,t,n,1477952195353,unsure,position,11,position,2,correct,correct,1
+9,male,33,else,correct,t,n,1477952285663,one,position,9,position,3,correct,correct,3
+11,male,42,position,correct,t,n,1477952518153,unsure,position,9,position,2,correct,correct,3
+11,male,42,position,correct,t,y,1477952874563,unsure,position,2,position,10,Please select...,Please select...,11
+5,male,33,position,correct,t,y,1477953265101,unsure,else,9,attribute,Please select...,correct,correct,1
+1,female,25,position,correct,t,y,1477954133524,one,else,5,position,3,correct,correct,11
+1,male,53,position,correct,t,y,1477961132598,all,position,1,position,4,correct,correct,11
+11,male,36,position,correct,t,y,1477961424158,all,position,1,position,7,correct,wrong,7
+8,male,42,else,Please select...,t,y,1477970039266,all,position,9,position,2,correct,correct,3
+11,male,34,position,correct,t,n,1477977900448,all,position,2,position,9,correct,correct,3
+3,female,18,Please select...,Please select...,t,y,1477984165905,Please select...,else,3,else,9,Please select...,wrong,9
+9,male,33,position,correct,t,n,1477984694939,all,else,11,position,2,correct,correct,7
+8,male,30,position,correct,t,y,1477990536235,unsure,attribute,8,position,3,correct,correct,3
+11,male,30,position,correct,t,n,1477990653531,unsure,position,11,position,3,correct,correct,3
+9,male,33,position,correct,t,y,1477991005606,unsure,position,9,position,7,correct,correct,7
+8,male,31,position,correct,t,y,1477992439937,all,position,8,position,2,correct,correct,3
+3,male,30,position,correct,t,y,1477992857890,all,position,7,position,3,correct,correct,3
+11,male,37,attribute,correct,t,y,1477996219756,all,attribute,11,attribute,1,wrong,wrong,1
+8,female,26,position,correct,t,y,1477996397774,unsure,position,8,attribute,4,correct,correct,11
+Please select...,female,18,Please select...,Please select...,t,y,1477997847368,Please select...,Please select...,Please select...,Please select...,Please select...,Please select...,Please select...,Please select...
+9,female,28,position,correct,t,y,1477997286910,unsure,position,8,else,3,correct,Please select...,3
+Please select...,female,18,Please select...,Please select...,t,y,1477997286910,Please select...,Please select...,Please select...,Please select...,Please select...,Please select...,Please select...,Please select...
+9,male,45,position,correct,t,y,1477998561647,all,position,9,Please select...,4,correct,Please select...,1
+10,other,52,position,correct,t,y,1477999323196,unsure,attribute,11,attribute,1,wrong,wrong,1
+10,female,45,position,correct,t,y,1477999441904,one,attribute,8,attribute,3,correct,wrong,2
+5,male,34,position,wrong,t,y,1478002397995,unsure,position,5,position,3,correct,wrong,3
+4,male,31,position,correct,t,y,1478001728430,all,position,5,position,11,correct,correct,3
+8,male,33,position,correct,t,n,1478004023324,unsure,position,9,position,3,correct,correct,3
+5,male,45,position,correct,t,y,1478004406576,all,position,11,position,11,correct,correct,3
+8,male,24,position,correct,t,y,1478008952694,all,attribute,9,position,2,wrong,correct,3
+11,male,23,position,correct,t,y,1478008960486,unsure,attribute,9,else,2,correct,correct,6
+4,male,48,position,correct,t,n,1478009516057,all,position,4,position,11,correct,wrong,11
+11,male,24,else,correct,t,y,1478009733477,unsure,position,1,position,1,correct,correct,11
+11,female,34,position,correct,t,y,1478010812890,unsure,position,1,position,1,correct,correct,11
+Please select...,male,25,Please select...,Please select...,t,y,1478010894609,Please select...,Please select...,Please select...,Please select...,Please select...,Please select...,Please select...,Please select...
+6,female,18,position,correct,t,y,1478011043995,all,attribute,5,attribute,7,wrong,correct,9
+9,female,24,position,correct,t,y,1478010005080,one,else,3,attribute,6,wrong,correct,9
+9,female,25,position,correct,t,n,1478012628197,one,attribute,3,attribute,4,correct,correct,11
+4,male,27,position,correct,t,y,1478012555797,all,position,5,position,3,correct,correct,11
+9,female,69,position,correct,t,y,1478014568970,all,position,1,position,3,correct,wrong,11
+Please select...,male,24,Please select...,Please select...,t,y,1478015810374,Please select...,Please select...,Please select...,Please select...,Please select...,Please select...,Please select...,Please select...
+9,male,40,position,correct,t,n,1478016341976,unsure,else,11,attribute,4,correct,correct,6
+8,female,29,position,correct,t,y,1478016390472,unsure,attribute,9,position,2,correct,correct,3
+9,female,44,position,correct,t,y,1478017535632,unsure,position,9,position,6,correct,Please select...,3
+Please select...,female,18,Please select...,Please select...,t,y,1478017979873,Please select...,Please select...,Please select...,Please select...,Please select...,Please select...,Please select...,Please select...
+11,male,36,position,correct,t,y,1478017913391,all,else,2,attribute,1,correct,correct,9
+9,male,31,position,correct,t,y,1478020952051,all,position,9,position,3,correct,correct,3
+4,male,29,position,correct,t,y,1478021194976,all,position,4,position,11,correct,correct,3
+11,female,27,else,correct,t,y,1478020117414,unsure,attribute,9,position,11,correct,correct,9
+Please select...,female,18,Please select...,Please select...,t,y,1478022010795,Please select...,Please select...,Please select...,Please select...,Please select...,Please select...,Please select...,Please select...
+2,male,36,position,correct,t,y,1478023859025,unsure,position,2,position,9,correct,correct,11
+8,male,34,position,correct,t,y,1478025714482,one,position,10,position,2,correct,correct,1
+8,male,42,position,correct,t,y,1478001077705,unsure,else,4,else,9,correct,correct,11
+11,female,40,position,correct,t,y,1478025709720,one,attribute,2,position,2,correct,correct,11
+10,male,31,position,correct,t,y,1478028414662,all,position,10,position,2,correct,correct,3
+11,female,32,position,correct,t,y,1478029874740,all,else,5,else,3,correct,wrong,1
+11,female,34,position,correct,t,y,1478034536884,unsure,attribute,8,position,3,correct,correct,3
+4,male,33,position,correct,t,n,1478038059315,all,position,4,position,3,correct,correct,3
+8,male,37,position,correct,t,y,1477978445312,unsure,position,8,position,3,correct,correct,3
+9,female,36,position,correct,t,y,1478044589336,one,else,9,Please select...,1,correct,correct,2
+8,male,26,position,correct,t,y,1478046077284,all,position,1,else,3,correct,correct,11
+9,male,32,position,correct,t,y,1478074983028,all,position,9,position,3,correct,correct,3
+8,male,47,position,correct,t,y,1478076202318,all,position,8,position,3,correct,correct,3
+9,male,38,position,correct,t,n,1478075488436,unsure,attribute,11,attribute,2,correct,correct,2
+9,female,34,attribute,correct,t,y,1478083135239,unsure,attribute,11,attribute,3,correct,correct,7
+9,male,35,position,correct,t,y,1478082396767,unsure,position,9,position,3,correct,correct,3
+4,male,24,else,correct,t,y,1478089452390,unsure,position,9,position,3,correct,correct,3
+8,male,41,position,correct,t,y,1478089868196,all,position,8,position,1,correct,correct,11
+11,male,44,position,correct,t,y,1478090199069,unsure,attribute,1,attribute,1,correct,wrong,11
+11,male,29,position,correct,t,y,1478090229309,all,attribute,11,position,3,correct,correct,3
+7,male,37,position,correct,t,y,1478089804415,unsure,else,11,else,Please select...,correct,correct,8
+11,male,37,position,correct,t,n,1478097095978,unsure,attribute,9,position,3,correct,correct,3
+4,female,26,position,correct,t,n,1478097198160,all,position,8,position,9,correct,correct,11
+8,female,24,position,correct,t,y,1478099018649,unsure,position,8,position,3,correct,correct,3
+Please select...,female,30,else,wrong,t,n,1478100355463,unsure,attribute,Please select...,else,Please select...,correct,wrong,Please select...
+Please select...,female,18,Please select...,Please select...,t,y,1478101809004,Please select...,Please select...,Please select...,Please select...,Please select...,Please select...,Please select...,Please select...
+9,male,29,position,correct,t,y,1478102269080,all,position,2,position,1,correct,correct,9
+8,female,43,position,correct,t,y,1478102874488,all,attribute,8,attribute,3,correct,correct,11
+8,male,39,position,Please select...,t,n,1478102806608,unsure,attribute,1,attribute,3,correct,correct,3
+4,female,32,else,correct,t,y,1478103510600,unsure,position,5,attribute,11,correct,wrong,3
+11,male,41,position,correct,t,y,1478103606509,unsure,attribute,1,attribute,2,correct,correct,11
+11,male,48,position,correct,t,n,1478103665885,unsure,attribute,11,else,2,correct,wrong,2
+8,female,34,position,correct,t,n,1478103917583,one,else,3,else,3,Please select...,Please select...,11
+11,female,35,position,correct,t,y,1478104123478,one,position,11,attribute,1,correct,correct,1
+6,female,27,position,correct,t,n,1478103998401,unsure,else,5,else,11,correct,correct,1
+11,male,34,else,correct,t,y,1478105735125,unsure,attribute,4,else,2,correct,correct,5
+7,female,47,position,correct,t,n,1478106480944,unsure,else,7,else,1,correct,wrong,1
+11,female,53,position,correct,t,n,1478107473297,all,position,11,position,2,correct,correct,8
+11,male,66,position,correct,t,y,1478109415699,unsure,else,11,else,3,correct,wrong,3
+11,male,50,position,correct,t,y,1478110372278,all,position,10,position,2,correct,correct,1
+11,male,43,position,correct,t,y,1478110963343,unsure,else,11,position,1,Please select...,Please select...,1
+2,male,52,position,correct,t,n,1478112168189,unsure,else,2,position,2,correct,correct,10
+9,female,61,position,correct,t,y,1478114615602,unsure,else,11,else,1,Please select...,correct,2
+11,female,49,attribute,correct,t,n,1478113988801,unsure,attribute,11,attribute,1,correct,wrong,1
+8,female,35,else,wrong,t,y,1478117634069,all,else,8,else,7,wrong,correct,9
+8,male,43,position,correct,t,y,1478120578794,one,position,2,else,6,correct,wrong,11
+5,male,40,position,correct,t,y,1478121111939,unsure,attribute,5,position,3,correct,correct,3
+9,female,35,position,correct,t,y,1478122962593,unsure,attribute,9,position,3,correct,wrong,2
+2,female,33,position,correct,t,n,1478130207567,all,attribute,9,position,10,correct,correct,3
+1,male,29,position,correct,t,y,1478165501295,one,position,1,else,6,wrong,wrong,6
+5,female,30,position,correct,t,y,1478166557192,all,position,5,attribute,2,correct,correct,2
+1,notdisclosed,34,position,correct,t,y,1478179691056,unsure,else,6,else,8,correct,correct,11
+1,male,35,position,correct,t,y,1478180779064,all,position,1,else,6,correct,Please select...,11
+7,female,37,position,correct,t,y,1478184144887,all,position,7,position,3,correct,correct,3
+4,female,27,position,correct,t,y,1478185774917,all,attribute,8,position,3,correct,correct,3
+9,female,51,else,correct,t,y,1478190009651,unsure,else,9,else,2,wrong,correct,2
+2,male,35,position,correct,t,y,1478176010085,all,position,1,position,9,correct,correct,11
+2,female,39,position,correct,t,y,1478198008732,all,else,2,else,11,correct,correct,11
+7,female,43,position,correct,t,y,1478279248875,unsure,else,9,Please select...,2,wrong,correct,5
+4,female,32,position,correct,t,y,1478336775217,unsure,else,1,attribute,1,correct,correct,6
+1,male,44,position,correct,t,y,1478345875031,all,position,9,position,2,correct,wrong,3
+8,male,43,else,correct,t,y,1478370328164,unsure,attribute,8,else,3,correct,wrong,3
+10,female,21,attribute,correct,t,y,1478397339844,unsure,position,11,attribute,2,wrong,correct,1
+8,male,52,position,correct,t,y,1478489308247,all,position,8,position,3,correct,correct,3
+10,female,27,position,correct,t,y,1478529005451,unsure,attribute,11,position,2,correct,correct,3
+Please select...,female,100,else,Please select...,t,y,1478617971349,unsure,else,Please select...,else,Please select...,Please select...,Please select...,Please select...
+4,male,33,position,correct,t,y,1478634690703,all,position,6,position,1,correct,correct,3
+9,male,23,position,correct,t,y,1478727894872,all,position,9,else,6,wrong,wrong,2
+8,male,45,position,correct,t,y,1478794658763,all,position,1,position,3,correct,correct,3
+8,notdisclosed,24,position,correct,t,y,1478886714690,all,position,8,position,3,correct,correct,11
+3,male,30,position,correct,t,n,1478623574571,one,position,4,else,10,correct,wrong,10

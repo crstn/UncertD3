@@ -1,0 +1,19 @@
+n = 103
+Mean age: 35.9805825243
+Median age: 35.0
+Std dev.: 7.82822945242
+Min age: 23
+Max age: 66
+188 out of 1133 outside of 100m circle (10.0%).
+Median response time for page 1: 16.564
+Median response time for page 2: 14.679
+Median response time for page 3: 12.907
+Median response time for page 4: 24.043
+Median response time for page 5: 13.383
+Median response time for page 6: 12.597
+Median response time for page 7: 12.169
+Median response time for page 8: 15.877
+Median response time for page 9: 10.535
+Median response time for page 10: 9.52
+Median response time for page 11: 9.274
+Avg. median: 12.7505

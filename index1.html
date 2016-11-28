@@ -3,83 +3,49 @@
 
 <body>
 
-  <div id="js-geojson-example"></div>
+    <p style="text-align: center">Place the red circle on the
+        <strong>most</strong> uncertain object on the map, then press enter.</p>
 
-  <script src="js/jquery.js"></script>
-  <script src="js/d3.js"></script>
-  <script src="js/common.js"></script>
-  <script src="js/js.cookie.js"></script>
+    <div id="js-geojson-example"></div>
 
-  <link rel="stylesheet" href="css/style.css" />
+    <script src="js/jquery.js"></script>
+    <script src="js/d3.js"></script>
+    <script src="js/common.js"></script>
+    <script src="js/js.cookie.js"></script>
 
-  <script>
-    $(document).ready(function() {
-
-      $('body').keypress(function(e) {
-        if (e.keyCode == 13) {
-          window.location.href = "index2_intro.html";
-        }
-      });
-    });
-
-    d3.json("Data/blocks.json", function(json) {
-      // create a first guess for the projection
-      var center = d3.geo.centroid(json)
-
-      var projection = d3.geo.mercator()
-        .scale(scale)
-        .center(center)
-        .translate(offset);
-
-      // create the path
-      var blockpath = d3.geo.path().projection(projection);
-
-      blocks.append("path")
-        .datum({
-          type: "FeatureCollection",
-          features: json.features
-        })
-        .attr("json", d3.geo.path())
-        .attr("d", blockpath)
-        .attr("class", "blox");
+    <link rel="stylesheet" href="css/style.css" />
 
 
-      // load the car data
-      d3.json("Data/car.json", function(carjson) {
-        var cardata = randomize(carjson);
-
-        $.post("http://localhost:8000", {
-          session: Cookies.get('session'),
-          data: JSON.stringify(cardata),
-          page: "1"
-        }, function(data) {
-          console.log("file written");
+    <script>
+        $(document).ready(function() {
+            // add the listener that will log the mouse coords and forward to the next page
+            addListener("index2_intro.html");
         });
 
+        // load the car data
+        d3.json("Data/car.json", function(carjson) {
+            var cardata = randomize(carjson);
 
-        car.selectAll('path')
-          .data(cardata.features)
-          .enter()
-          .append('svg:circle')
-          .attr("transform", function(d) {
-            return "translate(" + projection(d.geometry.coordinates) + ")";
-          })
-          .attr('r', function(d) {
-            return radius(d.properties.accuracy);
-          });
-
-      });
-
-      // add a rectangle to see the bound of the svg
-      blocks.append("rect")
-        .attr('width', width)
-        .attr('height', height)
-        .style('stroke', 'black')
-        .style('fill', 'none');
+            $.post("server.py", {
+                session: Cookies.get('session'),
+                data: JSON.stringify(cardata),
+                page: "1"
+            }, function(data) {
+                console.log("file written");
+            });
 
 
-    });
-  </script>
-  <p style="text-align: center">Place the red circle on the
-      <strong>most</strong> uncertain object on the map, then press enter.</p>
+            car.selectAll('path')
+                .data(cardata.features)
+                .enter()
+                .append('svg:circle')
+                .attr("transform", function(d) {
+                    return "translate(" + projection(d.geometry.coordinates) + ")";
+                })
+                .attr('r', function(d) {
+                    return radius(d.properties.accuracy);
+                });
+
+        });
+    </script>
 </body>

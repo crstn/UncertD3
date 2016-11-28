@@ -1,98 +1,98 @@
 #!/usr/bin/python
 
-"""
-Save this file as server.py
->>> python server.py 0.0.0.0 8001
-serving on 0.0.0.0:8001
-
-or simply
-
->>> python server.py
-Serving on localhost:8000
-
-You can use this to test GET and POST methods.
-
-"""
-
-import SimpleHTTPServer
-import SocketServer
 import logging
 import cgi
 
 import sys
 import os
 
+# enable debugging
+import cgitb
+cgitb.enable()
 
-if len(sys.argv) > 2:
-    PORT = int(sys.argv[2])
-    I = sys.argv[1]
-elif len(sys.argv) > 1:
-    PORT = int(sys.argv[1])
-    I = ""
+# logging.warning("======= POST STARTED =======")
+# logging.warning(self.headers)
+form = cgi.FieldStorage()
+# logging.warning("======= POST VALUES =======")
+# for item in form.list:
+#     logging.warning(item)
+
+session = form.getvalue('session')
+
+directory = 'experiments/'+session
+
+
+try:
+    if not os.path.exists(directory):
+        os.makedirs(directory, 0777)
+    # else:
+    #     os.chmod(directory, 0777)   # just in case
+except Exception as e:
+    logging.error(type(e))
+    logging.error(e.args)
+    logging.error(e)
+
+# this is to process the final questionnaire:
+if (form.getvalue('q') == 't'):
+
+    csv = "experiments/questionnaires.csv"
+
+    header = ""
+    values = ""
+
+    for key in form.keys():
+        header += str(key)+", "
+        values += str(form.getvalue(str(key)))+", "
+
+    with open(csv, "a") as text_file:
+            # text_file.write(header+"\n")
+            text_file.write(values+"\n")
+
+    os.chmod(csv, 0777)
+
+    print 'Content-Type: text/html'
+    print 'Status: 200 OK'
+    print
+    print '<!DOCTYPE html>'
+    print '<meta charset="utf-8">'
+    print '<link rel="stylesheet" href="css/pure-min.css" />'
+    print '<link rel="stylesheet" href="css/style.css" />'
+    print '<body>'
+    print '<div id="fb-root"></div>'
+    print '<script>(function(d, s, id) {'
+    print 'var js, fjs = d.getElementsByTagName(s)[0];'
+    print 'if (d.getElementById(id)) return;'
+    print 'js = d.createElement(s); js.id = id;'
+    print 'js.src = "//connect.facebook.net/en_US/sdk.js#xfbml=1&version=v2.8&appId=225759177445380";'
+    print 'fjs.parentNode.insertBefore(js, fjs);'
+    print '}(document, "script", "facebook-jssdk"));</script>'
+    print '<img src="thanks.gif" align="center" />'
+    print '<p style="text-align: center"><a href="https://twitter.com/share" class="twitter-share-button" data-text="Help @carstenkessler do some research on visualizations of uncertainty by participating in this quick online test:" data-url="http://carsten.io/uncertainty" data-lang="en" data-show-count="false">Tweet</a></p><div class="fb-share-button" style="margin-left: 46.7%"><a class="fb-xfbml-parse-ignore" target="_blank" href="https://www.facebook.com/sharer/sharer.php?u&amp;src=sdkpreparse">Share</a></div><p style="text-align: center">... or share this link any other way you like: <a href="http://carsten.io/uncertainty">http://carsten.io/uncertainty</a>.</p><script async src="//platform.twitter.com/widgets.js" charset="utf-8"></script>'
+    print '</body>'
+
+# # process the timing and coords of a single page
+elif (form.getvalue('s') == 't'):
+
+    log = directory+'/log.txt'
+    logtxt = str(form.getvalue('page'))+', '+str(form.getvalue('time'))+', '+str(form.getvalue('x'))+', '+str(form.getvalue('y'))+'\n'
+
+    with open(log, "a") as text_file:
+        text_file.write(logtxt)
+
+    os.chmod(log, 0777)
+
+    SimpleHTTPServer.SimpleHTTPRequestHandler.do_GET(self)
+
+# this processes the randomized car json datasets
 else:
-    PORT = 8000
-    I = ""
+    data = form.getvalue('data')
+    page = form.getvalue('page')
 
+    json = directory+"/"+page+".json"
 
-class ServerHandler(SimpleHTTPServer.SimpleHTTPRequestHandler):
+    with open(json, "w") as text_file:
+        text_file.write(data)
 
-    def do_GET(self):
-        logging.warning("======= GET STARTED =======")
-        # logging.warning(self.headers)
-        SimpleHTTPServer.SimpleHTTPRequestHandler.do_GET(self)
+    os.chmod(json, 0777)
 
-    def do_POST(self):
-        logging.warning("======= POST STARTED =======")
-        # logging.warning(self.headers)
-        form = cgi.FieldStorage(
-            fp=self.rfile,
-            headers=self.headers,
-            environ={'REQUEST_METHOD':'POST',
-                     'CONTENT_TYPE':self.headers['Content-Type'],
-                     })
-        logging.warning("======= POST VALUES =======")
-        # for item in form.list:
-        #     logging.warning(item)
-
-        session = form.getvalue('session')
-
-        directory = 'experiments/'+session
-
-        if not os.path.exists(directory):
-            os.makedirs(directory)
-
-        # this is to process the final questionnaire:
-        if(form.getvalue('q') == 't'):
-            header = ""
-            values = ""
-
-            for key in form.keys():
-                header += str(key)+", "
-                values += str(form.getvalue(str(key)))+", "
-
-            with open("experiments/questionnaires.csv", "a") as text_file:
-                    text_file.write(header+"\n")
-                    text_file.write(values+"\n")
-
-            # redirect to thank you page
-            self.send_response(301)
-            self.send_header('Location','http://localhost:8000/thanks.html')
-            self.end_headers()
-
-        # this process the randomized car json datasets
-        else:
-            data = form.getvalue('data')
-            page = form.getvalue('page')
-
-            with open(directory+"/"+page+".json", "w") as text_file:
-                text_file.write(data)
-
-            logging.warning("\n")
-            SimpleHTTPServer.SimpleHTTPRequestHandler.do_GET(self)
-
-Handler = ServerHandler
-
-httpd = SocketServer.TCPServer(("", PORT), Handler)
-
-print "Serving at: http://%(interface)s:%(port)s" % dict(interface=I or "localhost", port=PORT)
-httpd.serve_forever()
+    SimpleHTTPServer.SimpleHTTPRequestHandler.do_GET(self)

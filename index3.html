@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
 <body>
+    <p style="text-align: center">Place the red circle on the
+        <strong>most</strong> uncertain object on the map, then press enter.</p>
 
 <div id='js-geojson-example'></div>
 
@@ -21,25 +23,6 @@ $(document).ready(function() {
     });
 });
 
-  d3.json("Data/blocks.json", function(json) {
-      // create a first guess for the projection
-      var center = d3.geo.centroid(json)
-
-      var projection = d3.geo.mercator()
-                        .scale(scale)
-                        .center(center)
-                        .translate(offset);
-
-      // create the path
-      var blockpath = d3.geo.path().projection(projection);
-
-
-      blocks.append("path")
-        .datum({type: "FeatureCollection", features: json.features})
-        .attr("json", d3.geo.path())
-        .attr("d", blockpath)
-        .attr("class", "blox");
-
 
       // load the car data
 
@@ -47,7 +30,7 @@ $(document).ready(function() {
 
         var cardata = randomize(carjson);
 
-        $.post("http://localhost:8000", {
+        $.post("server.py", {
           session: Cookies.get('session'),
           data: JSON.stringify(cardata),
           page: "3"
@@ -71,18 +54,7 @@ $(document).ready(function() {
 
       });
 
-      // add a rectangle to see the bound of the svg
-      blocks.append("rect")
-          .attr('width', width)
-          .attr('height', height)
-          .style('stroke', 'black')
-          .style('fill', 'none');
-
-
-  });
 
 </script>
-<p style="text-align: center">Place the red circle on the
-    <strong>most</strong> uncertain object on the map, then press enter.</p>
 
 </body>

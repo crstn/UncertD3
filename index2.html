@@ -1,83 +1,53 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
+
 <body>
+    <p style="text-align: center">Place the red circle on the
+        <strong>least</strong> uncertain object on the map, then press enter.</p>
 
-<div id='js-geojson-example'></div>
+    <div id='js-geojson-example'></div>
 
-<script src="js/jquery.js"></script>
-<script src="js/d3.js"></script>
-<script src="js/common.js"></script>
-<script src="js/js.cookie.js"></script>
+    <script src="js/jquery.js"></script>
+    <script src="js/d3.js"></script>
+    <script src="js/common.js"></script>
+    <script src="js/js.cookie.js"></script>
 
-<link rel="stylesheet" href="css/style.css" />
+    <link rel="stylesheet" href="css/style.css" />
 
 
-<script>
-
-$(document).ready(function() {
-    $('body').keypress(function(e) {
-        if (e.keyCode == 13) {
-            window.location.href = "index3_intro.html";
-        }
-    });
-});
-
-  d3.json("Data/blocks.json", function(json) {
-      // create a first guess for the projection
-      var center = d3.geo.centroid(json)
-
-      var projection = d3.geo.mercator()
-                        .scale(scale)
-                        .center(center)
-                        .translate(offset);
-
-      // create the path
-      var blockpath = d3.geo.path().projection(projection);
-
-      blocks.append("path")
-        .datum({type: "FeatureCollection", features: json.features})
-        .attr("json", d3.geo.path())
-        .attr("d", blockpath)
-        .attr("class", "blox");
-
+    <script>
+        $(document).ready(function() {
+            $('body').keypress(function(e) {
+                if (e.keyCode == 13) {
+                    window.location.href = "index3_intro.html";
+                }
+            });
+        });
 
         // load the car data
         d3.json("Data/car.json", function(carjson) {
-          var cardata = randomize(carjson);
+            var cardata = randomize(carjson);
 
-          $.post("http://localhost:8000", {
-            session: Cookies.get('session'),
-            data: JSON.stringify(cardata),
-            page: "2"
-          }, function(data) {
-            console.log("file written");
-          });
+            $.post("server.py", {
+                session: Cookies.get('session'),
+                data: JSON.stringify(cardata),
+                page: "2"
+            }, function(data) {
+                console.log("file written");
+            });
 
-          car.selectAll('path')
-             .data(cardata.features)
-             .enter()
-             .append('svg:circle')
-             .attr("transform", function(d) {
-                return "translate(" + projection(d.geometry.coordinates) + ")";
-             })
-             .attr('r', 5)
-             .attr('fill-opacity',  function(d) {
-               return opacity(d.properties.accuracy);
-             });
+            car.selectAll('path')
+                .data(cardata.features)
+                .enter()
+                .append('svg:circle')
+                .attr("transform", function(d) {
+                    return "translate(" + projection(d.geometry.coordinates) + ")";
+                })
+                .attr('r', 5)
+                .attr('fill-opacity', function(d) {
+                    return opacity(d.properties.accuracy);
+                });
 
         });
-
-        // add a rectangle to see the bound of the svg
-        blocks.append("rect")
-            .attr('width', width)
-            .attr('height', height)
-            .style('stroke', 'black')
-            .style('fill', 'none');
-
-
-  });
-
-</script>
-<p style="text-align: center">Place the red circle on the
-    <strong>least</strong> uncertain object on the map, then press enter.</p>
+    </script>
 </body>

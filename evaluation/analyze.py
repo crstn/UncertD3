@@ -10,9 +10,14 @@ import matplotlib.pyplot as plt
 import scipy.stats as stat
 import numpy as np
 from geopy.distance import vincenty
+import pandas as pd
 
 # turn downloading of new data from server on or off:
 download = False
+scatterplot = False
+
+# break down by participant group:
+
 
 # some constants:
 circleRadius = 100
@@ -53,7 +58,26 @@ def loadData():
         # r = csv.reader(csvfile, delimiter=',', quotechar='|')
         rs = csv.DictReader(csvfile, delimiter=',')
         for r in rs:
-            responses.append(r)
+            # only men:
+            # if r["gender"] == "male":
+            #     responses.append(r)
+
+            # only women:
+            # if r["gender"] == "female":
+            #     responses.append(r)
+
+            # only experts:
+            # if r["job"] == "y":
+            #     responses.append(r)
+
+            #only non-experts:
+            if r["job"] == "n":
+                responses.append(r)
+
+            # everybody:
+            # responses.append(r)
+
+    # pprint.pprint(responses)
 
 
     # next, go through all the sessions and check if we already have a copy of the data for that session;
@@ -338,7 +362,7 @@ for key, value in d.iteritems():
 
     plt.axis('equal')
     plt.suptitle(value)
-    plt.savefig("../plots/" + key + ".pdf")
+    plt.savefig("../plots/rating_" + key + ".pdf")
 
     plt.clf()
 
@@ -357,6 +381,7 @@ plt.clf()
 
 #print some stats
 print "Mean age: "+str(np.mean(ages))
+print "Median age: "+str(np.median(ages))
 print "Std dev.: "+str(np.std(ages))
 print "Min age: "+str(np.min(ages))
 print "Max age: "+str(np.max(ages))
@@ -368,12 +393,14 @@ print "Max age: "+str(np.max(ages))
 distances = [[],[],[],[],[],[],[],[],[],[],[]]
 distances_no = [[],[],[],[],[],[],[],[],[],[],[]] # collect just the data that are no outliers
 clostests = [[],[],[],[],[],[],[],[],[],[],[]]
-clostests_no = [[],[],[],[],[],[],[],[],[],[],[]] # collect just the data that are no outliers
+clostests_no = [[],[],[],[],[],[],[],[],[],[],[]] # no outliers
 idws = [[],[],[],[],[],[],[],[],[],[],[]]
-idws_no = [[],[],[],[],[],[],[],[],[],[],[]] # collect just the data that are no outliers
+idws_no = [[],[],[],[],[],[],[],[],[],[],[]] # no outliers
 idwsWithinDistance = [[],[],[],[],[],[],[],[],[],[],[]]
 rspTimes = [[],[],[],[],[],[],[],[],[],[],[]]
-rspTimes_no = [[],[],[],[],[],[],[],[],[],[],[]]
+rspTimes_no = [[],[],[],[],[],[],[],[],[],[],[]] # no outliers
+semdistances = [[],[],[],[],[],[],[],[],[],[],[]]
+semdistances_no = [[],[],[],[],[],[],[],[],[],[],[]] # no outliers
 
 
 
@@ -430,6 +457,21 @@ for session in responses:
         if d < circleRadius:
             clostests_no[page - 1].append(c)
 
+        # collect the "semantic distances", i.e., the numeric difference
+        # between the uncertainty value we are looking for (1 or 7) and the
+        # value at the closest point:
+        if page % 2 == 0:  # even
+            # c will be <= 7, so:
+            semdist = 7 - c
+        else:  # not even
+            # c will be >= 1, so:
+            semdist = c - 1
+
+        semdistances[page - 1].append(semdist)
+        if d < circleRadius:
+            semdistances_no[page - 1].append(semdist)
+
+
         # collect all IDW values in a list of lists by page
         idw = getIDW(session, page, clickpoint, idwNeighbors)
         idws[page - 1].append(idw)
@@ -445,6 +487,15 @@ for session in responses:
             lostclicks = lostclicks + 1
 
 print str(lostclicks) + " out of " + str(len(responses)*11) + " outside of " + str(circleRadius) + "m circle (" + str(lostclicks/len(responses)*10.0) + "%)."
+
+ms = []
+for i in range(11):
+    m = np.median(rspTimes[i])
+    if i != 3:
+        ms.append(m)
+    print "Median response time for page " + str(i+1) +": " + str(m)
+
+print "Avg. median: " + str(np.mean(ms))
 
 # box plots of the response times
 plt.boxplot(rspTimes)
@@ -535,45 +586,46 @@ for i in range(len(plts)):
 
 
 
-# simple scatter plot of response time vs. distance to correct answer:
-
-for page in range(len(distances)):
-
-    print "Pearson's r for page " + str(page) + ": " + str(stat.pearsonr(distances[page], rspTimes[page]))
-
-    d, t = sortBoth(distances[page], rspTimes[page])
+def plotscatter(a, b, title, path):
+    x, y = sortBoth(list(a), list(b)) # make copies, otherwise the origina data is changed!
 
     # these have to be np arrays, see http://stackoverflow.com/questions/26690480/matplotlib-valueerror-x-and-y-must-have-same-first-dimension
-    d = np.array(d)
-    t = np.array(t)
+    x = np.array(x)
+    y = np.array(y)
 
-    m, b = np.polyfit(t, d, 1)
+    m, b = np.polyfit(x, y, 1)
 
-    plt.plot(t, d, ".", label="Page "+str(page))
-    plt.plot(t, m*d + b, "-", linewidth = 1.0)
+    plt.plot(x, y, ".", label="Page "+str(page))
+    plt.plot(x, m*y + b, "-", linewidth = 1.0)
 
-    plt.suptitle("Distance to correct answer vs. response time")
-    plt.savefig("../plots/dist_vs_time_"+str(page+1)+".pdf")
-
-    plt.clf()
-
-
-
-    # and repeat without outliers:
-
-    print "Pearson's r for page " + str(page) + ": " + str(stat.pearsonr(distances[page], rspTimes[page]))
-
-    d, t = sortBoth(distances_no[page], rspTimes_no[page])
-
-    d = np.array(d)
-    t = np.array(t)
-
-    m, b = np.polyfit(t, d, 1)
-
-    plt.plot(t, d, ".", label="Page "+str(page))
-    plt.plot(t, m*d + b, "-", linewidth = 1.0)
-
-    plt.suptitle("Distance to correct answer vs. response time")
-    plt.savefig("../plots/dist_vs_time_"+str(page+1)+"_no.pdf")
+    plt.suptitle(title)
+    plt.savefig(path)
 
     plt.clf()
+
+# simple scatter plot of response time vs. distance to correct answer:
+if scatterplot:
+    for page in range(len(distances)):
+
+        print "Pearson's r for distance on page " + str(page) + ": " + str(stat.pearsonr(distances[page], rspTimes[page]))
+
+        plotscatter(distances[page], rspTimes[page], "Distance to correct answer vs. response time", "../plots/dist_vs_time_"+str(page+1)+".pdf")
+
+
+        # and repeat without outliers:
+
+        print "Pearson's r for distance on page " + str(page) + " (no): " + str(stat.pearsonr(distances_no[page], rspTimes_no[page]))
+
+        plotscatter(distances_no[page], rspTimes_no[page], "Distance to correct answer vs. response time (no outliers)", "../plots/dist_vs_time_no"+str(page+1)+".pdf")
+
+
+        # and the same for semantic distances:
+
+        print semdistances[page]
+        print rspTimes[page]
+        print "Pearson's r for sem. dist. on page " + str(page) + str(stat.pearsonr(rspTimes[page], semdistances[page]))
+        plotscatter(rspTimes[page], semdistances[page], "Semantic Distance to correct answer vs. response time", "../plots/sem_dist_vs_time_"+str(page+1)+".pdf")
+
+        # and repeat without outliers:
+        print "Pearson's r for sem. dist. on page " + str(page) + " (no): " + str(stat.pearsonr(rspTimes_no[page], semdistances_no[page]))
+        plotscatter(rspTimes_no[page], semdistances_no[page], "Semantic Distance to correct answer vs. response time (no outliers)", "../plots/sem_dist_vs_time_no"+str(page+1)+".pdf")

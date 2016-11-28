@@ -6,3 +6,5 @@ evaluation/data/*
 *.pdf
 
 evaluation/plots/heatmap.png
+
+evaluation/*/*.txt

@@ -13,3 +13,9 @@ User test to explore different ways to visualize uncertainty. To be conducted wi
 9. Bounce + Size
 10. Bounce + Opacity
 11. Bounce + Size + Opacity
+
+### License
+
+UncertD3 is licensed under GNU General Public License, version 3, see file LICENSE.
+
+Copyright (C) 2018 - Carsten Kessler.

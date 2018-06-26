@@ -334,7 +334,7 @@ plt.pie(counts, labels=labels, colors=ftecolors, autopct=lambda(
 # Set aspect ratio to be equal so that pie is drawn as a circle.
 plt.axis('equal')
 plt.suptitle('Gender breakdown')
-plt.savefig("../plots/gender.pdf")
+plt.savefig(os.path.expanduser("~") + "/Dropbox/Code/UncertD3/evaluation/plots/gender.pdf")
 
 plt.clf()
 
@@ -345,20 +345,20 @@ d = {"bestmost": "Best visualization to identify the most uncertain object",
      "worstmost": "Worst visualization to identify the most uncertain object",
      "worstleast": "Worst visualization to identify the least uncertain object"}
 
-colors = ['#008fd5', '#33bbff', '#005f8f', '#fc4322', '#B51D03', '#FB310E',
-          '#DD2403', '#C92103', '#fc4f30', '#A11A02', '#F12704', '#8b8b8b']
+#colors = ['#008fd5', '#33bbff', '#005f8f', '#fc4322', '#B51D03', '#FB310E', '#DD2403', '#C92103', '#fc4f30', '#A11A02', '#F12704', '#8b8b8b']
+
+colors = ['#008fd5', '#008fd5', '#008fd5', '#fc4f30', '#fc4f30', '#fc4f30', '#fc4f30', '#A11A02', '#A11A02', '#A11A02', '#A11A02', '#8b8b8b']
 
 for key, value in d.iteritems():
 
     labels, counts = gatherPieData(responses, key)
 
     for i in range(len(labels)):
-        labels[i] = labels[i].replace("Please select...", "undecided")
+        labels[i] = labels[i].replace("Please select...", " ")
 
     total = sum(counts)
 
-    plt.pie(counts, labels=labels, colors=colors, autopct=lambda(
-        p): '{:.0f}'.format(p * total / 100), shadow=False, startangle=90)
+    plt.pie(counts, labels=labels, colors=colors, shadow=False, startangle=90, counterclock=False)
 
     plt.axis('equal')
     plt.suptitle(value)
